@@ -3,3 +3,5 @@
 [ext_resource type="PackedScene" uid="uid://dcnq5om555txs" path="res://player/player.tscn" id="1_uicr2"]
 
 [node name="ClientPlayer" instance=ExtResource("1_uicr2")]
+
+[node name="Camera3D" type="Camera3D" parent="." index="0"]
