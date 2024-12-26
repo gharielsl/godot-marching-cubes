@@ -1,7 +1,0 @@
-[gd_scene load_steps=3 format=3 uid="uid://c4e3ikgyvd81f"]
-
-[ext_resource type="PackedScene" uid="uid://hsxg8j7sxofc" path="res://game/game.tscn" id="1_608v8"]
-[ext_resource type="Script" path="res://game/Singleplayer.cs" id="2_1b5no"]
-
-[node name="Singleplayer" instance=ExtResource("1_608v8")]
-script = ExtResource("2_1b5no")

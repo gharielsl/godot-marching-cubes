@@ -2,17 +2,38 @@ using Godot;
 
 public partial class Menu : Node3D
 {
-	[Export]
-	public PackedScene SingleplayerScene;
-	[Export]
-	public PackedScene MultiplayerScene;
+	private LineEdit _address;
+	private LineEdit _port;
+	private Button _join;
 	private void SingleplayerClick()
 	{
-		GetTree().ChangeSceneToPacked(SingleplayerScene);
+		Global.IsHost = true;
+		Global.GlobalNode.ChangeSceneToFile("res://game/game.tscn");
 	}
-	private void JoinClick()
+	private async void JoinClick()
 	{
-
+		if (_address.Text.Length < 4)
+		{
+			return;
+		}
+		_join.Text = "Connecting...";
+		await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+		await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+		try
+		{
+			Global.MultiplayerPort = short.Parse(_port.Text);
+			Global.MultiplayerAddress = _address.Text;
+			Global.IsHost = false;
+			Global.GlobalNode.ChangeSceneToFile("res://game/game.tscn");
+		}
+		catch { }
+	}
+	private void AddressOrPortChanged(string newText)
+	{
+		if (_join.Text == "Failed to connect")
+		{
+			_join.Text = "Join";
+		}
 	}
 	private void OptionsClick()
 	{
@@ -21,5 +42,20 @@ public partial class Menu : Node3D
 	private void LeaveClick()
 	{
 		GetTree().Quit();
+	}
+	public override void _Ready()
+	{
+		base._Ready();
+		Input.MouseMode = Input.MouseModeEnum.Visible;
+		_address = GetNode<LineEdit>("MenuUi/Menu/JoinContainer/Address");
+		_port = GetNode<LineEdit>("MenuUi/Menu/JoinContainer/Port");
+		_join = GetNode<Button>("MenuUi/Menu/JoinContainer/Join");
+		if (Global.FailedToConnect)
+		{
+			_join.Text = "Failed to connect";
+			_address.Text = Global.MultiplayerAddress;
+			_port.Text = Global.MultiplayerPort + "";
+		}
+		Global.FailedToConnect = false;
 	}
 }

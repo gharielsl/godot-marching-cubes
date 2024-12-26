@@ -1,8 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://b4s25r455x0bf"]
+[gd_scene load_steps=7 format=3 uid="uid://b4s25r455x0bf"]
 
 [ext_resource type="Script" path="res://world/World.cs" id="1_ogu12"]
 [ext_resource type="Material" uid="uid://r0crwrd7v5yi" path="res://shaders/sky.tres" id="2_8l2do"]
-[ext_resource type="PackedScene" uid="uid://pbesdlh0ix7w" path="res://player/client_player.tscn" id="3_hwiqj"]
 
 [sub_resource type="Sky" id="Sky_iajvr"]
 sky_material = ExtResource("2_8l2do")
@@ -10,6 +9,12 @@ sky_material = ExtResource("2_8l2do")
 [sub_resource type="Environment" id="Environment_17pbx"]
 background_mode = 2
 sky = SubResource("Sky_iajvr")
+
+[sub_resource type="BoxMesh" id="BoxMesh_2doan"]
+size = Vector3(10, 1, 10)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_njgln"]
+size = Vector3(10, 1, 10)
 
 [node name="World" type="Node3D"]
 script = ExtResource("1_ogu12")
@@ -28,4 +33,10 @@ visible = false
 [node name="Players" type="Node3D" parent="."]
 transform = Transform3D(0.999997, -0.00227194, 0.00116255, 0.00227614, 0.999991, -0.00362351, -0.0011543, 0.00362614, 0.999993, 0, 0, 0)
 
-[node name="ClientPlayer" parent="." instance=ExtResource("3_hwiqj")]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_2doan")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+shape = SubResource("BoxShape3D_njgln")

@@ -1,9 +1,7 @@
-[gd_scene load_steps=7 format=3 uid="uid://dufn0jy00llwk"]
+[gd_scene load_steps=5 format=3 uid="uid://dufn0jy00llwk"]
 
 [ext_resource type="PackedScene" uid="uid://b4s25r455x0bf" path="res://world/world.tscn" id="1_twqe7"]
 [ext_resource type="Script" path="res://Menu.cs" id="1_yk3s2"]
-[ext_resource type="PackedScene" uid="uid://c4e3ikgyvd81f" path="res://game/singleplayer.tscn" id="2_aacss"]
-[ext_resource type="PackedScene" uid="uid://yamwr6lcgorg" path="res://game/multiplayer.tscn" id="3_jc0nu"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_oossn"]
 
@@ -11,8 +9,6 @@
 
 [node name="Menu" type="Node3D"]
 script = ExtResource("1_yk3s2")
-SingleplayerScene = ExtResource("2_aacss")
-MultiplayerScene = ExtResource("3_jc0nu")
 
 [node name="World" parent="." instance=ExtResource("1_twqe7")]
 
@@ -25,7 +21,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="Menu" type="VBoxContainer" parent="MenuUi"]
-custom_minimum_size = Vector2(384, 0)
+custom_minimum_size = Vector2(584, 0)
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -34,6 +30,7 @@ offset_left = 380.0
 offset_right = -380.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/separation = 12
 alignment = 1
 
 [node name="TitleContainer" type="HBoxContainer" parent="MenuUi/Menu"]
@@ -41,9 +38,9 @@ layout_mode = 2
 alignment = 1
 
 [node name="Title" type="Label" parent="MenuUi/Menu/TitleContainer"]
-custom_minimum_size = Vector2(392, 48)
+custom_minimum_size = Vector2(584, 72)
 layout_mode = 2
-theme_override_font_sizes/font_size = 28
+theme_override_font_sizes/font_size = 36
 text = "Godot Marching Cubes Example"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -53,29 +50,30 @@ layout_mode = 2
 alignment = 1
 
 [node name="Singleplayer" type="Button" parent="MenuUi/Menu/SingleplayerContainer"]
-custom_minimum_size = Vector2(392, 48)
+custom_minimum_size = Vector2(600, 72)
 layout_mode = 2
 focus_mode = 0
 text = "Singleplayer"
 
 [node name="JoinContainer" type="HBoxContainer" parent="MenuUi/Menu"]
 layout_mode = 2
+theme_override_constants/separation = 12
 alignment = 1
 
-[node name="Address" type="TextEdit" parent="MenuUi/Menu/JoinContainer"]
-custom_minimum_size = Vector2(192, 48)
+[node name="Address" type="LineEdit" parent="MenuUi/Menu/JoinContainer"]
+custom_minimum_size = Vector2(288, 72)
 layout_mode = 2
 theme_override_styles/focus = SubResource("StyleBoxEmpty_oossn")
-placeholder_text = "Adress"
+placeholder_text = "Address"
 
-[node name="Port" type="TextEdit" parent="MenuUi/Menu/JoinContainer"]
-custom_minimum_size = Vector2(96, 48)
+[node name="Port" type="LineEdit" parent="MenuUi/Menu/JoinContainer"]
+custom_minimum_size = Vector2(144, 72)
 layout_mode = 2
 theme_override_styles/focus = SubResource("StyleBoxEmpty_4oi28")
 placeholder_text = "Port"
 
 [node name="Join" type="Button" parent="MenuUi/Menu/JoinContainer"]
-custom_minimum_size = Vector2(96, 48)
+custom_minimum_size = Vector2(144, 72)
 layout_mode = 2
 focus_mode = 0
 text = "Join"
@@ -85,7 +83,7 @@ layout_mode = 2
 alignment = 1
 
 [node name="Options" type="Button" parent="MenuUi/Menu/OptionsContainer"]
-custom_minimum_size = Vector2(392, 48)
+custom_minimum_size = Vector2(600, 72)
 layout_mode = 2
 focus_mode = 0
 text = "Options"
@@ -95,11 +93,16 @@ layout_mode = 2
 alignment = 1
 
 [node name="Leave" type="Button" parent="MenuUi/Menu/LeaveContainer"]
-custom_minimum_size = Vector2(392, 48)
+custom_minimum_size = Vector2(600, 72)
 layout_mode = 2
 focus_mode = 0
 text = "Leave"
 
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+
 [connection signal="pressed" from="MenuUi/Menu/SingleplayerContainer/Singleplayer" to="." method="SingleplayerClick"]
+[connection signal="text_changed" from="MenuUi/Menu/JoinContainer/Address" to="." method="AddressOrPortChanged"]
+[connection signal="text_changed" from="MenuUi/Menu/JoinContainer/Port" to="." method="AddressOrPortChanged"]
 [connection signal="pressed" from="MenuUi/Menu/JoinContainer/Join" to="." method="JoinClick"]
 [connection signal="pressed" from="MenuUi/Menu/LeaveContainer/Leave" to="." method="LeaveClick"]

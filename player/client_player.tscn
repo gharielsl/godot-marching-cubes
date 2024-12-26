@@ -1,7 +1,29 @@
-[gd_scene load_steps=2 format=3 uid="uid://pbesdlh0ix7w"]
+[gd_scene load_steps=5 format=3 uid="uid://cperj8loe6vjo"]
 
-[ext_resource type="PackedScene" uid="uid://dcnq5om555txs" path="res://player/player.tscn" id="1_uicr2"]
+[ext_resource type="Script" path="res://player/ClientPlayer.cs" id="2_2vf8p"]
 
-[node name="ClientPlayer" instance=ExtResource("1_uicr2")]
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_nu33r"]
 
-[node name="Camera3D" type="Camera3D" parent="." index="0"]
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_ecqgl"]
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_5g4qw"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 2
+
+[node name="ClientPlayer" type="CharacterBody3D"]
+script = ExtResource("2_2vf8p")
+
+[node name="Collision" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_nu33r")
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+mesh = SubResource("CapsuleMesh_ecqgl")
+
+[node name="Head" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+
+[node name="Camera" type="Camera3D" parent="Head"]
+
+[node name="Synchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_5g4qw")

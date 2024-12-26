@@ -1,7 +1,0 @@
-[gd_scene load_steps=3 format=3 uid="uid://yamwr6lcgorg"]
-
-[ext_resource type="PackedScene" uid="uid://hsxg8j7sxofc" path="res://game/game.tscn" id="1_x3it4"]
-[ext_resource type="Script" path="res://game/Multiplayer.cs" id="2_kqp6q"]
-
-[node name="Multiplayer" instance=ExtResource("1_x3it4")]
-script = ExtResource("2_kqp6q")

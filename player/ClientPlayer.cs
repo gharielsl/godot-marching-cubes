@@ -1,0 +1,112 @@
+using Godot;
+
+public partial class ClientPlayer : CharacterBody3D
+{
+	[Export]
+	public float JumpHeight = 1;
+	[Export]
+	public float Acceleration = 2;
+	[Export]
+	public float MaxSpeed = 10;
+	[Export]
+	public float Speed = 5;
+	[Export]
+	public float Deceleration = 2;
+	[Export]
+	public float Gravity = 10;
+
+	private long _networkId;
+	private float _jolt = 1;
+	private Node3D _head;
+	private Camera3D _camera;
+	private CollisionShape3D _collision;
+	private MultiplayerSynchronizer _synchronizer;
+	private Vector3 _velocity = new Vector3();
+	private Vector2 _mouseInput = new Vector2();
+	private Vector2 _input = new Vector2();
+	public override void _EnterTree()
+	{
+		base._EnterTree();
+		SetMultiplayerAuthority((int)_networkId);
+	}
+	public override void _Ready()
+	{
+		base._Ready();
+		_head = GetNode<Node3D>("Head");
+		_camera = _head.GetNode<Camera3D>("Camera");
+		_collision = GetNode<CollisionShape3D>("Collision");
+		_synchronizer = GetNode<MultiplayerSynchronizer>("Synchronizer");
+		_camera.Current = _networkId == Multiplayer.GetUniqueId();
+	}
+	public override void _PhysicsProcess(double delta)
+	{
+		base._PhysicsProcess(delta);
+		if (_synchronizer.GetMultiplayerAuthority() != Multiplayer.GetUniqueId())
+		{
+			return;
+		}
+		_input = Input.GetVector("move_left", "move_right", "move_backward", "move_forward");
+		Vector3 direction = new Vector3();
+		direction += _input.X * _head.GlobalTransform.Basis.X;
+		direction -= _input.Y * _head.GlobalTransform.Basis.Z;
+		_velocity = _velocity.Lerp(direction * Speed, Acceleration * _jolt * (float)delta);
+
+		if (IsOnFloor())
+		{
+			_jolt = 1;
+			_velocity.Y = 0;
+			if (Input.IsActionJustPressed("jump"))
+			{
+				_jolt = 0.1f;
+				_velocity.Y = JumpHeight;
+			}
+		}
+		else
+		{
+			_velocity.Y -= Gravity * (float)delta;
+		}
+		Vector3 rotation = _camera.Rotation;
+		rotation.X -= _mouseInput.Y * Global.MouseSensitivity * (float)delta;
+		rotation.X = Mathf.Clamp(rotation.X, -Mathf.Pi / 2, Mathf.Pi / 2);
+		_camera.Rotation = rotation;
+		_head.RotateY(-_mouseInput.X * Global.MouseSensitivity * (float)delta);
+		_mouseInput = Vector2.Zero;
+		if (IsOnFloor())
+		{
+			Vector2 surfaceVelocity = new Vector2(_velocity.X, _velocity.Z);
+			if (surfaceVelocity.Length() > MaxSpeed)
+			{
+				surfaceVelocity = surfaceVelocity.Normalized() * MaxSpeed;
+			}
+			if (_input.Length() == 0)
+			{
+				surfaceVelocity = surfaceVelocity.Lerp(Vector2.Zero, Deceleration*(float)delta);
+			}
+			_velocity.X = surfaceVelocity.X;
+			_velocity.Z = surfaceVelocity.Y;
+		}
+		Velocity = _velocity;
+		MoveAndSlide();
+	}
+	public override void _Input(InputEvent @event)
+	{
+		base._Input(@event);
+		if (_synchronizer.GetMultiplayerAuthority() != Multiplayer.GetUniqueId())
+		{
+			return;
+		}
+		if (Input.MouseMode != Input.MouseModeEnum.Captured)
+		{
+			return;
+		}
+		if (@event is InputEventMouseMotion mouseEvent)
+		{
+			_mouseInput = mouseEvent.Relative;
+		}
+	}
+	public long NetworkId
+	{
+		get { return _networkId; }
+		set { _networkId = value; }
+	}
+}
