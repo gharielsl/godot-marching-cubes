@@ -2,17 +2,11 @@ using Godot;
 
 public partial class ClientPlayer : CharacterBody3D
 {
-	[Export]
-	public float JumpHeight = 1;
-	[Export]
+	public float JumpHeight = 3.5f;
 	public float Acceleration = 2;
-	[Export]
 	public float MaxSpeed = 10;
-	[Export]
 	public float Speed = 5;
-	[Export]
 	public float Deceleration = 2;
-	[Export]
 	public float Gravity = 10;
 
 	private long _networkId;

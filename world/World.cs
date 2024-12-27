@@ -44,4 +44,16 @@ public partial class World : Node3D
 			}
 		}
 	}
+	public void ChunkLoaded(int x, int z, int[] voxels)
+	{
+		
+	}
+	public void ChunkUnloaded(int x, int z)
+	{
+		
+	}
+	public ClientPlayer Player
+    {
+		get { return _player; }
+    }
 }

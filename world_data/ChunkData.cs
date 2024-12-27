@@ -3,6 +3,7 @@ public partial class ChunkData
 	public static readonly int ChunkSize = 10;
 
 	private readonly int _x, _z, _seed;
+	private bool _disposed = false, _generating = false;
 	private Voxel[,,] _data;
 	public ChunkData(int x, int z, int seed)
 	{
@@ -40,7 +41,35 @@ public partial class ChunkData
 		}
 		_data[x, y, z] = voxel;
 	}
-	public int X 
+	public int[] CreateFlatArray()
+    {
+		int[] voxels = new int[ChunkSize * WorldData.WorldHeight * ChunkSize];
+		for (int x = 0; x < ChunkSize; x++)
+		{
+			for (int y = 0; y < WorldData.WorldHeight; y++)
+			{
+				for (int z = 0; z < ChunkSize; z++)
+				{
+					voxels[x + y * ChunkSize + z * ChunkSize * WorldData.WorldHeight] = GetVoxel(x, y, z).Id;
+				}
+			}
+		}
+		return voxels;
+	}
+	public void Dispose()
+    {
+		_disposed = true;
+	}
+	public bool IsDisposed
+	{ 
+		get { return _disposed; } 
+	}
+	public bool IsGenerating
+    {
+		get { return _generating; }
+		set { _generating = value; }
+    }
+    public int X 
 	{ 
 		get { return _x; } 
 	}

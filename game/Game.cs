@@ -28,6 +28,16 @@ public partial class Game : Node3D
 		Input.MouseMode = Input.MouseModeEnum.Captured;
 		return true;
 	}
+	public void ChunkLoaded(int x, int z, int[] voxels)
+	{
+		GD.Print("Client chunk loaded at ", x, " ", z, " size: ", voxels.Length);
+		_world.ChunkLoaded(x, z, voxels);
+	}
+	public void ChunkUnloaded(int x, int z)
+	{
+		GD.Print("Client chunk unloaded at ", x, " ", z);
+		_world.ChunkUnloaded(x, z);
+	}
 	public void Connected(Player player, Player[] existing)
 	{
 		_world.Connected(player, existing);
@@ -69,6 +79,10 @@ public partial class Game : Node3D
 		if (_network.Peer != null)
 		{
 			_network.Peer.Poll();
+			if (_world.Player != null)
+			{
+				_network.Rpc(nameof(_network.PlayerUpdated), new Player(_world.Player).Dictionary);
+			}
 		}
 	}
 }

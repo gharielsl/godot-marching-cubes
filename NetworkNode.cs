@@ -24,6 +24,14 @@ public partial class NetworkNode : Node
 			_game.Connected(player, existingArray);
 		}
 	}
+	[Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true)]
+	public void PlayerUpdated(Godot.Collections.Dictionary playerDict)
+    {
+		if (_server != null)
+        {
+			_server.PlayerUpdated(new Player(playerDict));
+		}
+    }
 	[Rpc(MultiplayerApi.RpcMode.Authority, CallLocal = true)]
 	public void PlayerJoined(Godot.Collections.Dictionary playerDict)
 	{
@@ -41,6 +49,19 @@ public partial class NetworkNode : Node
 		{
 			_game.PlayerLeft(player);
 		}
+	}
+	[Rpc(MultiplayerApi.RpcMode.Authority, CallLocal = true)]
+	public void ChunkLoaded(int x, int z, int[] chunkData)
+    {
+		if (_game != null)
+        {
+			_game.ChunkLoaded(x, z, chunkData);
+        }
+    }
+	[Rpc(MultiplayerApi.RpcMode.Authority, CallLocal = true)]
+	public void ChunkUnloaded(int x, int z)
+	{
+		_game.ChunkUnloaded(x, z);
 	}
 	public Game Game
 	{
