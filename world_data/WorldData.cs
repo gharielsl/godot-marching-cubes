@@ -6,17 +6,17 @@ using System.Threading;
 public partial class WorldData
 {
 	public static readonly int WorldHeight = 128;
-	public static readonly int ChunkRenderDistance = 16;
+	public static readonly int ChunkRenderDistance = 4;
 	public static readonly double DayDuration = 24 * 60;
 
 	private readonly ConcurrentDictionary<int, ConcurrentDictionary<int, ChunkData>> _chunks = new();
-	private readonly List<Player> _players = new();
+	private readonly List<PlayerData> _players = new();
 	private readonly HashSet<ChunkData> _previousChunks = new();
 	private readonly ConcurrentQueue<ChunkData> _generatingChunks = new();
 	private readonly ConcurrentQueue<ChunkData> _generatedChunks = new();
 	private readonly ConcurrentDictionary<ChunkData, int[]> _generatedChunksData = new();
 	private readonly Server _server;
-	private Thread _generatingThread;
+	private Thread _chunkGenerator;
 	private double _worldTime = 0;
 	private void GeneratingLoop()
 	{
@@ -37,7 +37,7 @@ public partial class WorldData
 				}
 				_generatedChunks.Enqueue(chunk);
 			}
-        }
+		}
 	}
 	public void Update(double delta)
     {
@@ -51,11 +51,11 @@ public partial class WorldData
 			_generatedChunks.TryDequeue(out ChunkData chunk);
 			_generatedChunksData.TryRemove(chunk, out int[] voxels);
 			SetChunk(chunk.X, chunk.Z, chunk);
-			chunk.IsGenerating = false;	
+			chunk.IsGenerating = false;
 			_server.Network.Rpc(nameof(_server.Network.ChunkLoaded), chunk.X, chunk.Z, voxels);
 		}
 		HashSet<ChunkData> currentChunks = new HashSet<ChunkData>();
-		foreach (Player player in _players)
+		foreach (PlayerData player in _players)
 		{
 			WorldDataUtils.GetChunksInRadius(this, player.Position / new Vector3(ChunkData.ChunkSize, 1, ChunkData.ChunkSize), ChunkRenderDistance, currentChunks);
 		}
@@ -83,9 +83,9 @@ public partial class WorldData
 		_previousChunks.Clear();
 		_previousChunks.UnionWith(currentChunks);
 	}
-	public Player GetPlayer(long networkId)
+	public PlayerData GetPlayer(long networkId)
 	{
-		foreach (Player player in _players)
+		foreach (PlayerData player in _players)
 		{
 			if (player.NetworkId == networkId)
 			{
@@ -136,16 +136,16 @@ public partial class WorldData
 		_chunks[x].TryAdd(z, chunk);
 	}
 	// Rpc
-	public void PlayerUpdated(Player playerData)
+	public void PlayerUpdated(PlayerData playerData)
     {
-		Player player = GetPlayer(playerData.NetworkId);
+		PlayerData player = GetPlayer(playerData.NetworkId);
 		if (player != null)
         {
 			player.Position = playerData.Position;
         }
 	}
 	// Rpc
-	public void PlayerJoined(Player player)
+	public void PlayerJoined(PlayerData player)
 	{
 		_players.Add(player);
 		foreach (var col in _chunks)
@@ -159,17 +159,17 @@ public partial class WorldData
 		}
 	}
 	// Rpc
-	public void PlayerLeft(Player player)
+	public void PlayerLeft(PlayerData player)
 	{
 		_players.Remove(player);
 	}
 	public WorldData(Server server)
 	{
 		_server = server;
-		_generatingThread = new Thread(GeneratingLoop);
-		_generatingThread.Start();
+		_chunkGenerator = new Thread(GeneratingLoop);
+		_chunkGenerator.Start();
 	}
-	public List<Player> Players
+	public List<PlayerData> Players
 	{
 		get { return _players; }
 	}

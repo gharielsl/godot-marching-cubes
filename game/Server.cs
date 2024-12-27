@@ -24,7 +24,7 @@ public partial class Server : Node
 	public void PeerConnected(long id)
 	{
 		GD.Print("Server peer connected: ", id);
-		Player player = new()
+		PlayerData player = new()
 		{
 			NetworkId = id
 		};
@@ -41,11 +41,11 @@ public partial class Server : Node
 	private void PeerDisconnected(long id)
 	{
 		GD.Print("Server peer disconnected: ", id);
-		Player player = _world.GetPlayer(id);
+		PlayerData player = _world.GetPlayer(id);
 		_world.PlayerLeft(player);
 		_network.Rpc(nameof(_network.PlayerLeft), player.Dictionary);
 	}
-	public void PlayerUpdated(Player player)
+	public void PlayerUpdated(PlayerData player)
     {
 		_world.PlayerUpdated(player);
 	}

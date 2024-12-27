@@ -1,3 +1,5 @@
+using Godot;
+
 public partial class ChunkData
 {
 	public static readonly int ChunkSize = 10;
@@ -14,6 +16,23 @@ public partial class ChunkData
 	public void Generate()
 	{
 		_data = new Voxel[ChunkSize, WorldData.WorldHeight, ChunkSize];
+		for (int x = 0; x < ChunkSize; x++)
+        {
+			for (int y = 0; y < WorldData.WorldHeight; y++)
+            {
+				for (int z = 0; z < ChunkSize; z++)
+                {
+					if (y == 0)
+                    {
+						_data[x, y, z] = DirtVoxel.Instance;
+                    }
+					else
+                    {
+						_data[x, y, z] = AirVoxel.Instance;
+					}
+                }
+            }
+        }
 	}
 	public Voxel GetVoxel(int x, int y, int z)
 	{
@@ -44,17 +63,17 @@ public partial class ChunkData
 	public int[] CreateFlatArray()
     {
 		int[] voxels = new int[ChunkSize * WorldData.WorldHeight * ChunkSize];
-		for (int x = 0; x < ChunkSize; x++)
-		{
-			for (int y = 0; y < WorldData.WorldHeight; y++)
-			{
-				for (int z = 0; z < ChunkSize; z++)
-				{
-					voxels[x + y * ChunkSize + z * ChunkSize * WorldData.WorldHeight] = GetVoxel(x, y, z).Id;
-				}
-			}
-		}
-		return voxels;
+        for (int x = 0; x < ChunkSize; x++)
+        {
+            for (int y = 0; y < WorldData.WorldHeight; y++)
+            {
+                for (int z = 0; z < ChunkSize; z++)
+                {
+                    voxels[x + y * ChunkSize + z * ChunkSize * WorldData.WorldHeight] = GetVoxel(x, y, z).Id;
+                }
+            }
+        }
+        return voxels;
 	}
 	public void Dispose()
     {

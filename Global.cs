@@ -2,7 +2,7 @@ using Godot;
 
 public partial class Global : Node
 {
-    public static ClientPlayer ClientPlayer;
+    public static Player ClientPlayer;
     public static string MultiplayerAddress;
     public static short MultiplayerPort;
     public static bool FailedToConnect = false;

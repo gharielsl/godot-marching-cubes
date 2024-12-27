@@ -38,15 +38,15 @@ public partial class Game : Node3D
 		GD.Print("Client chunk unloaded at ", x, " ", z);
 		_world.ChunkUnloaded(x, z);
 	}
-	public void Connected(Player player, Player[] existing)
+	public void Connected(PlayerData player, PlayerData[] existing)
 	{
 		_world.Connected(player, existing);
 	}
-	public void PlayerJoined(Player player)
+	public void PlayerJoined(PlayerData player)
 	{
 		_world.PlayerJoined(player);
 	}
-	public void PlayerLeft(Player player)
+	public void PlayerLeft(PlayerData player)
 	{
 		_world.PlayerLeft(player);
 	}
@@ -81,7 +81,7 @@ public partial class Game : Node3D
 			_network.Peer.Poll();
 			if (_world.Player != null)
 			{
-				_network.Rpc(nameof(_network.PlayerUpdated), new Player(_world.Player).Dictionary);
+				_network.Rpc(nameof(_network.PlayerUpdated), new PlayerData(_world.Player).Dictionary);
 			}
 		}
 	}

@@ -13,12 +13,12 @@ public partial class NetworkNode : Node
 	[Rpc(MultiplayerApi.RpcMode.Authority, CallLocal = true)]
 	public void ClientPlayerConnected(Godot.Collections.Dictionary playerDict, Godot.Collections.Array<Godot.Collections.Dictionary> existing)
     {
-		Player[] existingArray = new Player[existing.Count];
+		PlayerData[] existingArray = new PlayerData[existing.Count];
 		for (int i = 0; i < existingArray.Length; i++)
 		{
-			existingArray[i] = new Player(existing[i]);
+			existingArray[i] = new PlayerData(existing[i]);
 		}
-		Player player = new Player(playerDict);
+		PlayerData player = new PlayerData(playerDict);
 		if (_game != null)
 		{
 			_game.Connected(player, existingArray);
@@ -29,13 +29,13 @@ public partial class NetworkNode : Node
     {
 		if (_server != null)
         {
-			_server.PlayerUpdated(new Player(playerDict));
+			_server.PlayerUpdated(new PlayerData(playerDict));
 		}
     }
 	[Rpc(MultiplayerApi.RpcMode.Authority, CallLocal = true)]
 	public void PlayerJoined(Godot.Collections.Dictionary playerDict)
 	{
-		Player player = new Player(playerDict);
+		PlayerData player = new(playerDict);
 		if (_game != null)
 		{
 			_game.PlayerJoined(player);
@@ -44,7 +44,7 @@ public partial class NetworkNode : Node
 	[Rpc(MultiplayerApi.RpcMode.Authority, CallLocal = true)]
 	public void PlayerLeft(Godot.Collections.Dictionary playerDict)
 	{
-		Player player = new Player(playerDict);
+		PlayerData player = new(playerDict);
 		if (_game != null)
 		{
 			_game.PlayerLeft(player);

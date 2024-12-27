@@ -6,3 +6,5 @@
 script = ExtResource("1_krl6t")
 
 [node name="Collision" type="CollisionShape3D" parent="."]
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
