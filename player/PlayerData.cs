@@ -16,11 +16,11 @@ public partial class PlayerData
 	{
 		
 	}
-	public long NetworkId
+	public int NetworkId
 	{
 		get 
 		{
-			return _dict["NetworkId"].AsInt64();
+			return _dict["NetworkId"].AsInt32();
 		}
 		set 
 		{

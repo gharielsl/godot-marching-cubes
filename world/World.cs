@@ -9,6 +9,9 @@ public partial class World : Node3D
 	private Node3D _players;
 	private Node3D _chunksNode;
 	private Thread _chunkGenerator;
+	private WorldEnvironment _environment;
+	private DirectionalLight3D _sun;
+	private DirectionalLight3D _moon;
 	private readonly PackedScene _chunkScene = ResourceLoader.Load<PackedScene>("res://world/chunk.tscn");
 	private readonly Dictionary<int, Player> _playersDict = new();
 	private readonly Dictionary<int, Dictionary<int, Chunk>> _chunks = new();
@@ -20,6 +23,9 @@ public partial class World : Node3D
 		base._Ready();
 		_players = GetNode<Node3D>("Players");
 		_chunksNode = GetNode<Node3D>("Chunks");
+		_environment = GetNode<WorldEnvironment>("Environment");
+		_sun = GetNode<DirectionalLight3D>("Sun");
+		_moon = GetNode<DirectionalLight3D>("Moon");
 		_chunkGenerator = new Thread(GeneratingLoop);
 		_chunkGenerator.Start();
 	}
@@ -65,9 +71,10 @@ public partial class World : Node3D
 		{
 			Player existingPlayerScene = playerScene.Instantiate<Player>();
 			existingPlayerScene.NetworkId = existingPlayer.NetworkId;
-			_playersDict[(int)existingPlayer.NetworkId] = existingPlayerScene;
+			_playersDict[existingPlayer.NetworkId] = existingPlayerScene;
 			_players.AddChild(existingPlayerScene);
 		}
+		GD.Print("AAAAAAAAAAAAAAAAAAAAAA", playerData);
 		_player = playerScene.Instantiate<Player>();
 		_player.NetworkId = playerData.NetworkId;
 		_players.AddChild(_player);
@@ -80,7 +87,7 @@ public partial class World : Node3D
 		}
 		Player scenePlayer = ResourceLoader.Load<PackedScene>("res://player/player.tscn").Instantiate<Player>();
 		scenePlayer.NetworkId = playerData.NetworkId;
-		_playersDict[(int)playerData.NetworkId] = scenePlayer;
+		_playersDict[playerData.NetworkId] = scenePlayer;
 		_players.AddChild(scenePlayer);
 	}
 	public void PlayerLeft(PlayerData player)
@@ -99,7 +106,7 @@ public partial class World : Node3D
 		{
 			return;
 		}
-		_playersDict[(int)playerData.NetworkId].Position = playerData.Position;
+		_playersDict[playerData.NetworkId].Position = playerData.Position;
 	}
 	public Chunk GetChunk(int x, int z)
 	{
@@ -148,6 +155,25 @@ public partial class World : Node3D
 					_chunks.Remove(x);
 				}
 			}
+		}
+	}
+	public void WorldTimeUpdated(double worldTime)
+	{
+		double timeInDay = worldTime % WorldData.DayDuration;
+		double angleInDegrees = -(timeInDay / WorldData.DayDuration) * 360.0;
+		_sun.Rotation = new Vector3(Mathf.DegToRad((float)angleInDegrees), 0, 0);
+		_moon.Rotation = new Vector3(-Mathf.DegToRad((float)angleInDegrees), 0, 0);
+		if (worldTime < WorldData.DayDuration / 2)
+		{
+			_sun.SkyMode = DirectionalLight3D.SkyModeEnum.LightAndSky;
+			_environment.Environment.VolumetricFogAlbedo = Colors.Gray;
+			_environment.Environment.VolumetricFogEmission = new Color(0.424f, 0.424f, 0.424f);
+		}
+		else
+		{
+			_sun.SkyMode = DirectionalLight3D.SkyModeEnum.SkyOnly;
+			_environment.Environment.VolumetricFogAlbedo = Color.FromHtml("#04001b");
+			_environment.Environment.VolumetricFogEmission = Color.FromHtml("#04001b");
 		}
 	}
 	public Player Player

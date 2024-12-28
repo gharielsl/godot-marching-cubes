@@ -54,6 +54,10 @@ public partial class Game : Node3D
 	{
 		_world.PlayerUpdated(playerData);
 	}
+	public void WorldTimeUpdated(double worldTime)
+	{
+		_world.WorldTimeUpdated(worldTime);
+	}
 	public override void _Ready()
 	{
 		base._Ready();

@@ -71,6 +71,14 @@ public partial class NetworkNode : Node
 			_game.ChunkUnloaded(x, z);
 		}
 	}
+	[Rpc(MultiplayerApi.RpcMode.Authority, CallLocal = true)]
+	public void WorldTimeUpdated(double worldTime)
+    {
+		if (_game != null)
+        {
+			_game.WorldTimeUpdated(worldTime);
+		}
+    }
 	public Game Game
 	{
 		get { return _game; }

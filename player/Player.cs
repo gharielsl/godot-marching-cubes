@@ -9,7 +9,7 @@ public partial class Player : CharacterBody3D
 	public float Deceleration = 2;
 	public float Gravity = 10;
 
-	private long _networkId;
+	private int _networkId;
 	private float _jolt = 1;
 	private Node3D _head;
 	private Camera3D _camera;
@@ -20,7 +20,7 @@ public partial class Player : CharacterBody3D
 	public override void _EnterTree()
 	{
 		base._EnterTree();
-		SetMultiplayerAuthority((int)_networkId);
+		SetMultiplayerAuthority(_networkId);
 	}
 	public override void _Ready()
 	{
@@ -96,7 +96,7 @@ public partial class Player : CharacterBody3D
 			_mouseInput = mouseEvent.Relative;
 		}
 	}
-	public long NetworkId
+	public int NetworkId
 	{
 		get { return _networkId; }
 		set { _networkId = value; }

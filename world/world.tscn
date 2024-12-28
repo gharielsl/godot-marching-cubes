@@ -29,7 +29,9 @@ shadow_opacity = 0.5
 shadow_blur = 4.0
 
 [node name="Moon" type="DirectionalLight3D" parent="."]
-visible = false
+light_color = Color(0.272161, 0.349195, 0.862709, 1)
+light_energy = 0.02
+light_indirect_energy = 0.2
 
 [node name="Chunks" type="Node3D" parent="."]
 

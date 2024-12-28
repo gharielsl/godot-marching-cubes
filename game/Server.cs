@@ -26,13 +26,15 @@ public partial class Server : Node
 		GD.Print("Server peer connected: ", id);
 		PlayerData player = new()
 		{
-			NetworkId = id
+			NetworkId = (int)id
 		};
 		Godot.Collections.Array<Godot.Collections.Dictionary> existingPlayers = new();
 		existingPlayers.Resize(_world.Players.Count);
-		for (int i = 0; i < _world.Players.Count; i++)
-		{
-			existingPlayers[i] = _world.Players[i].Dictionary;
+		int i = 0;
+		foreach (PlayerData playerData in _world.Players.Values)
+        {
+			existingPlayers[i] = playerData.Dictionary;
+			i++;
 		}
 		_network.Rpc(nameof(_network.PlayerJoined), player.Dictionary);
 		_network.RpcId(id, nameof(_network.ClientPlayerConnected), player.Dictionary, existingPlayers);
@@ -41,7 +43,7 @@ public partial class Server : Node
 	private void PeerDisconnected(long id)
 	{
 		GD.Print("Server peer disconnected: ", id);
-		PlayerData player = _world.GetPlayer(id);
+		PlayerData player = _world.Players[(int)id];
 		_world.PlayerLeft(player);
 		_network.Rpc(nameof(_network.PlayerLeft), player.Dictionary);
 	}
