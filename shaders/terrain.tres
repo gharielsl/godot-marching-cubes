@@ -1,0 +1,7 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://bcbv8pets5ltd"]
+
+[ext_resource type="Shader" path="res://shaders/terrain.gdshader" id="1_rl70o"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_rl70o")

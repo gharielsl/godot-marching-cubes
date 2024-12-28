@@ -15,24 +15,7 @@ public partial class ChunkData
 	}
 	public void Generate()
 	{
-		_data = new Voxel[ChunkSize, WorldData.WorldHeight, ChunkSize];
-		for (int x = 0; x < ChunkSize; x++)
-        {
-			for (int y = 0; y < WorldData.WorldHeight; y++)
-            {
-				for (int z = 0; z < ChunkSize; z++)
-                {
-					if (y == 0)
-                    {
-						_data[x, y, z] = DirtVoxel.Instance;
-                    }
-					else
-                    {
-						_data[x, y, z] = AirVoxel.Instance;
-					}
-                }
-            }
-        }
+		_data = WorldGenerator.Generate(_x, _z, _seed);
 	}
 	public Voxel GetVoxel(int x, int y, int z)
 	{

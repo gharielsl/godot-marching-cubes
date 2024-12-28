@@ -12,6 +12,7 @@ public partial class World : Node3D
 	private WorldEnvironment _environment;
 	private DirectionalLight3D _sun;
 	private DirectionalLight3D _moon;
+	private bool _playerSpawned = false;
 	private readonly PackedScene _chunkScene = ResourceLoader.Load<PackedScene>("res://world/chunk.tscn");
 	private readonly Dictionary<int, Player> _playersDict = new();
 	private readonly Dictionary<int, Dictionary<int, Chunk>> _chunks = new();
@@ -74,7 +75,6 @@ public partial class World : Node3D
 			_playersDict[existingPlayer.NetworkId] = existingPlayerScene;
 			_players.AddChild(existingPlayerScene);
 		}
-		GD.Print("AAAAAAAAAAAAAAAAAAAAAA", playerData);
 		_player = playerScene.Instantiate<Player>();
 		_player.NetworkId = playerData.NetworkId;
 		_players.AddChild(_player);
@@ -138,6 +138,18 @@ public partial class World : Node3D
 		if (chunk.GetParent() == null)
 		{
 			chunk.Position = new Vector3(ChunkData.ChunkSize * x, 0, ChunkData.ChunkSize * z);
+			WorldDataUtils.WorldToChunk((int)_player.Position.X, (int)_player.Position.Z, out int playerChunkX, out int playerChunkZ, out int _, out int _);
+			if (!_playerSpawned && playerChunkX == x && playerChunkZ == z)
+			{
+				chunk.OnGenerated = () =>
+				{
+					if (!_playerSpawned)
+					{
+						_player.TeleportToTop();
+						_playerSpawned = true;
+					}
+				};
+			}
 			_chunksNode.AddChild(chunk);
 		}
 	}
@@ -179,5 +191,17 @@ public partial class World : Node3D
 	public Player Player
 	{
 		get { return _player; }
+	}
+	public ConcurrentQueue<Chunk> GeneratingChunks
+	{
+		get { return _generatingChunks; }
+	}
+	public ConcurrentQueue<Chunk> GeneratingPriorityChunks
+	{
+		get { return _generatingPriorityChunks; }
+	}
+	public ConcurrentQueue<Chunk> GeneratingBorderChunks
+	{
+		get { return _generatingBorderChunks; }
 	}
 }

@@ -14,6 +14,7 @@ public partial class Player : CharacterBody3D
 	private Node3D _head;
 	private Camera3D _camera;
 	private CollisionShape3D _collision;
+	private RayCast3D _spawnCheck;
 	private Vector3 _velocity = new Vector3();
 	private Vector2 _mouseInput = new Vector2();
 	private Vector2 _input = new Vector2();
@@ -28,6 +29,7 @@ public partial class Player : CharacterBody3D
 		_head = GetNode<Node3D>("Head");
 		_camera = _head.GetNode<Camera3D>("Camera");
 		_collision = GetNode<CollisionShape3D>("Collision");
+		_spawnCheck = GetNode<RayCast3D>("SpawnCheck");
 		_camera.Current = _networkId == Multiplayer.GetUniqueId();
 	}
 	public override void _PhysicsProcess(double delta)
@@ -79,6 +81,13 @@ public partial class Player : CharacterBody3D
 		}
 		Velocity = _velocity;
 		MoveAndSlide();
+	}
+	public void TeleportToTop()
+	{
+		_spawnCheck.Enabled = true;
+		_spawnCheck.ForceRaycastUpdate();
+		GlobalPosition = _spawnCheck.GetCollisionPoint() + new Vector3(0, 1.5f, 0);
+		_spawnCheck.Enabled = false;
 	}
 	public override void _Input(InputEvent @event)
 	{

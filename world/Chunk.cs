@@ -8,18 +8,22 @@ public partial class Chunk : StaticBody3D
 	public static readonly int BorderSize = 3;
 	public static readonly int ChunkSizeWithBorder = ChunkData.ChunkSize + BorderSize * 2;
 
+	public Action OnGenerated;
 	private Voxel[,,] _data;
 	private readonly ConcurrentQueue<Action> _frameQueue = new();
 	private bool _generating = false, _disposed = false;
 	private int _x, _z;
+	private Chunk[] _neighbours = new Chunk[8];
+	private bool[] _neighbourNeedsUpdate = new bool[8];
 	private World _world;
 	private CollisionShape3D _collision;
-	private MeshInstance3D _mesh;
+	private MeshInstance3D _mesh, _transparentMesh;
 	public override void _Ready()
 	{
 		base._Ready();
 		_collision = GetNode<CollisionShape3D>("Collision");
 		_mesh = GetNode<MeshInstance3D>("Mesh");
+		_transparentMesh = GetNode<MeshInstance3D>("TransparentMesh");
 		_collision.Shape = new ConcavePolygonShape3D();
 	}
 	public override void _Process(double delta)
@@ -41,9 +45,226 @@ public partial class Chunk : StaticBody3D
 		}
 		_collision.Dispose();
 	}
+	private void UpdateNeighbours()
+	{
+		_neighbours[0] = _world.GetChunk(_x + 1, _z);
+		_neighbours[1] = _world.GetChunk(_x - 1, _z);
+		_neighbours[2] = _world.GetChunk(_x, _z + 1);
+		_neighbours[3] = _world.GetChunk(_x, _z - 1);
+		_neighbours[4] = _world.GetChunk(_x + 1, _z + 1);
+		_neighbours[5] = _world.GetChunk(_x + 1, _z - 1);
+		_neighbours[6] = _world.GetChunk(_x - 1, _z + 1);
+		_neighbours[7] = _world.GetChunk(_x - 1, _z - 1);
+		int B = BorderSize;
+		int S = ChunkData.ChunkSize;
+		int SB = ChunkSizeWithBorder;
+		int H = WorldData.WorldHeight;
+		for (int a = 0; a < SB - B; a++)
+		{
+			for (int y = 0; y < H; y++)
+			{
+				for (int i = 0; i < B; i++)
+				{
+					int oa = B - a - 1;
+					int ri = B - i - 1;
+					if (a < BorderSize)
+					{
+						if (_neighbours[4] != null)
+						{
+							try
+							{
+								if (_neighbours[4]._data[oa, y, ri] != GetVoxel(ChunkData.ChunkSize - a - 1, y, ChunkData.ChunkSize - i - 1))
+								{
+									_neighbourNeedsUpdate[4] = true;
+									_neighbours[4]._data[oa, y, ri] = GetVoxel(ChunkData.ChunkSize - a - 1, y, ChunkData.ChunkSize - i - 1);
+								}
+								_data[ChunkSizeWithBorder - oa - 1, y, ChunkSizeWithBorder - ri - 1] = _neighbours[4].GetVoxel(a, y, i);
+							}
+							catch (Exception ex)
+							{
+
+							}
+						}
+						if (_neighbours[5] != null)
+						{
+							try
+							{
+								if (_neighbours[5]._data[oa, y, ChunkSizeWithBorder - ri - 1] != GetVoxel(ChunkData.ChunkSize - a - 1, y, i))
+								{
+									_neighbourNeedsUpdate[5] = true;
+									_neighbours[5]._data[oa, y, ChunkSizeWithBorder - ri - 1] = GetVoxel(ChunkData.ChunkSize - a - 1, y, i);
+								}
+								_data[ChunkSizeWithBorder - oa - 1, y, ri] = _neighbours[5].GetVoxel(a, y, ChunkData.ChunkSize - i - 1);
+							}
+							catch (Exception ex)
+							{
+
+							}
+
+						}
+						if (_neighbours[6] != null)
+						{
+							try
+							{
+								if (_neighbours[6]._data[ChunkSizeWithBorder - oa - 1, y, ri] != GetVoxel(a, y, ChunkData.ChunkSize - i - 1))
+								{
+									_neighbourNeedsUpdate[6] = true;
+									_neighbours[6]._data[ChunkSizeWithBorder - oa - 1, y, ri] = GetVoxel(a, y, ChunkData.ChunkSize - i - 1);
+								}
+								_data[oa, y, ChunkSizeWithBorder - ri - 1] = _neighbours[6].GetVoxel(ChunkData.ChunkSize - a - 1, y, i);
+							}
+							catch (Exception ex)
+							{
+
+							}
+
+						}
+						if (_neighbours[7] != null)
+						{
+							try
+							{
+								if (_neighbours[7]._data[ChunkSizeWithBorder - oa - 1, y, ChunkSizeWithBorder - ri - 1] != GetVoxel(a, y, i))
+								{
+									_neighbourNeedsUpdate[7] = true;
+									_neighbours[7]._data[ChunkSizeWithBorder - oa - 1, y, ChunkSizeWithBorder - ri - 1] = GetVoxel(a, y, i);
+								}
+								_data[oa, y, ri] = _neighbours[7].GetVoxel(ChunkData.ChunkSize - a - 1, y, ChunkData.ChunkSize - i - 1);
+							}
+							catch (Exception ex)
+							{
+
+							}
+
+						}
+						continue;
+					}
+					ri = BorderSize - i;
+					oa = a - BorderSize;
+					if (_neighbours[0] != null)
+					{
+						try
+						{
+							if (_neighbours[0]._data != null)
+							{
+								if (_neighbours[0]._data[ri - 1, y, oa + BorderSize] != GetVoxel(ChunkData.ChunkSize - i - 1, y, oa))
+								{
+									_neighbourNeedsUpdate[0] = true;
+									_neighbours[0]._data[ri - 1, y, oa + BorderSize] = GetVoxel(ChunkData.ChunkSize - i - 1, y, oa);
+								}
+								_data[ChunkSizeWithBorder - ri, y, oa + BorderSize] = _neighbours[0].GetVoxel(i, y, oa);
+							}
+						}
+						catch (Exception ex)
+						{
+
+						}
+
+					}
+					if (_neighbours[1] != null)
+					{
+						try
+						{
+							if (_neighbours[1]._data != null)
+							{
+								if (_neighbours[1]._data[ChunkSizeWithBorder - ri, y, oa + BorderSize] != GetVoxel(i, y, oa))
+								{
+									_neighbourNeedsUpdate[1] = true;
+									_neighbours[1]._data[ChunkSizeWithBorder - ri, y, oa + BorderSize] = GetVoxel(i, y, oa);
+								}
+								_data[ri - 1, y, oa + BorderSize] = _neighbours[1].GetVoxel(ChunkData.ChunkSize - i - 1, y, oa);
+							}
+						}
+						catch (Exception ex)
+						{
+
+						}
+
+					}
+					if (_neighbours[2] != null)
+					{
+						try
+						{
+							if (_neighbours[2]._data != null)
+							{
+								if (_neighbours[2]._data[oa + BorderSize, y, ri - 1] != GetVoxel(oa, y, ChunkData.ChunkSize - i - 1))
+								{
+									_neighbourNeedsUpdate[2] = true;
+									_neighbours[2]._data[oa + BorderSize, y, ri - 1] = GetVoxel(oa, y, ChunkData.ChunkSize - i - 1);
+								}
+								_data[oa + BorderSize, y, ChunkSizeWithBorder - ri] = _neighbours[2].GetVoxel(oa, y, i);
+							}
+						}
+						catch (Exception ex)
+						{
+
+						}
+
+					}
+					if (_neighbours[3] != null)
+					{
+						try
+						{
+							if (_neighbours[3]._data != null)
+							{
+								if (_neighbours[3]._data[oa + BorderSize, y, ChunkSizeWithBorder - ri] != GetVoxel(oa, y, i))
+								{
+									_neighbourNeedsUpdate[3] = true;
+									_neighbours[3]._data[oa + BorderSize, y, ChunkSizeWithBorder - ri] = GetVoxel(oa, y, i);
+								}
+								_data[oa + BorderSize, y, ri - 1] = _neighbours[3].GetVoxel(oa, y, ChunkData.ChunkSize - i - 1);
+							}
+						}
+						catch (Exception ex)
+						{
+
+						}
+					}
+				}
+			}	
+		}
+	}
+	private void CreateMesh(List<Vector3> positions, List<int> indices, MeshInstance3D mesh)
+	{
+		ArrayMesh arrayMesh = null;
+		SurfaceTool surfaceTool = null;
+		if (indices.Count > 0)
+		{
+			arrayMesh = new ArrayMesh();
+			Godot.Collections.Array arrays = new Godot.Collections.Array();
+			arrays.Resize((int)Mesh.ArrayType.Max);
+			arrays[(int)Mesh.ArrayType.Vertex] = positions.ToArray();
+			arrays[(int)Mesh.ArrayType.Index] = indices.ToArray();
+			surfaceTool = new SurfaceTool();
+			surfaceTool.CreateFromArrays(arrays);
+			surfaceTool.GenerateNormals();
+			arrayMesh.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, surfaceTool.CommitToArrays());
+		}
+		_frameQueue.Enqueue(() =>
+		{
+			if (mesh.Mesh != null)
+			{
+				mesh.Mesh.Dispose();
+				mesh.Mesh = null;
+			}
+			if (indices.Count > 0)
+			{
+				surfaceTool.Dispose();
+				mesh.Mesh = arrayMesh;
+			}
+			_generating = false;
+			if (OnGenerated != null && mesh == _mesh)
+			{
+				OnGenerated();
+			}
+		});
+	}
 	public void Generate(bool selfOnly)
 	{
 		_generating = true;
+		if (!selfOnly)
+		{
+			UpdateNeighbours();
+		}
 		List<Vector3> positions = new();
 		List<int> indices = new();
 		Dictionary<Vector3, int> uniquePositions = new();
@@ -68,41 +289,34 @@ public partial class Chunk : StaticBody3D
 				}
 			}
 		}
-		indices.Reverse();
-		tranIndices.Reverse();
+		if (!selfOnly)
+		{
+			for (int i = 0; i < _neighbourNeedsUpdate.Length; i++)
+			{
+				if (_neighbourNeedsUpdate[i])
+				{
+					_world.GeneratingBorderChunks.Enqueue(_neighbours[i]);
+				}
+			}
+		}
+		GeometrySmoothing.SmoothGeometry(positions, indices);
+		GeometrySmoothing.SmoothGeometry(tranPositions, tranIndices);
 		Vector3[] collision = new Vector3[indices.Count];
 		for (int i = 0; i < indices.Count; i++)
 		{
 			collision[i] = positions[indices[i]];
 		}
-		ArrayMesh arrayMesh = null;
-		SurfaceTool surfaceTool = null;
-		if (indices.Count > 0)
-		{
-			arrayMesh = new ArrayMesh();
-			Godot.Collections.Array arrays = new Godot.Collections.Array();
-			arrays.Resize((int)Mesh.ArrayType.Max);
-			arrays[(int)Mesh.ArrayType.Vertex] = positions.ToArray();
-			arrays[(int)Mesh.ArrayType.Index] = indices.ToArray();
-			surfaceTool = new SurfaceTool();
-			surfaceTool.CreateFromArrays(arrays);
-			surfaceTool.GenerateNormals();
-			arrayMesh.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, surfaceTool.CommitToArrays());
-		}
+		CreateMesh(positions, indices, _mesh);
+		CreateMesh(tranPositions, tranIndices, _transparentMesh);
 		_frameQueue.Enqueue(() =>
 		{
-			if (_mesh.Mesh != null)
-			{
-				_mesh.Mesh.Dispose();
-			}
+			_collision.Shape.Dispose();
 			if (indices.Count > 0)
 			{
-				surfaceTool.Dispose();
-				_mesh.Mesh = arrayMesh;
 				((ConcavePolygonShape3D)_collision.Shape).SetFaces(collision);
 			}
-			_generating = false;
 		});
+
 	}
 	public void SetData(int x, int z, World world, int[] data)
 	{
@@ -127,6 +341,15 @@ public partial class Chunk : StaticBody3D
 			}
 		}
 		_data = voxels;
+	}
+	public Voxel GetVoxel(int x, int y, int z)
+	{
+		if (x < 0 || y < 0 || z < 0) return AirVoxel.Instance;
+		if ((x > ChunkData.ChunkSize - 1) || (y > WorldData.WorldHeight - 1) || (z > ChunkData.ChunkSize - 1))
+		{
+			return AirVoxel.Instance;
+		}
+		return _data[x + BorderSize, y, z + BorderSize];
 	}
 	public int X
 	{

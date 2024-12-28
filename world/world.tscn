@@ -9,6 +9,10 @@ sky_material = ExtResource("2_8l2do")
 [sub_resource type="Environment" id="Environment_17pbx"]
 background_mode = 2
 sky = SubResource("Sky_iajvr")
+ssr_enabled = true
+ssao_enabled = true
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.01
 
 [sub_resource type="BoxMesh" id="BoxMesh_2doan"]
 size = Vector3(10, 1, 10)
@@ -24,6 +28,7 @@ environment = SubResource("Environment_17pbx")
 
 [node name="Sun" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.857563, -0.263816, 0.441574, 0, 0.858459, 0.512882, -0.51438, -0.439829, 0.736183, 0, 0, 0)
+light_energy = 0.5
 shadow_enabled = true
 shadow_opacity = 0.5
 shadow_blur = 4.0
