@@ -21,6 +21,10 @@ public partial class Server : Node
 		_network.Peer.Host.Compress(ENetConnection.CompressionMode.RangeCoder);
 		GD.Print("Server opened on: ", port);
 	}
+	public void ClientPlayerConnected(PlayerData player) // Player node generated at client
+	{
+		_world.PlayerNodeGenerated(player);
+	}
 	public void PeerConnected(long id)
 	{
 		GD.Print("Server peer connected: ", id);

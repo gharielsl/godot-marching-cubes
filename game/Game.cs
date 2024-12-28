@@ -38,17 +38,21 @@ public partial class Game : Node3D
 		GD.Print("Client chunk unloaded at ", x, " ", z);
 		_world.ChunkUnloaded(x, z);
 	}
-	public void Connected(PlayerData player, PlayerData[] existing)
+	public void Connected(PlayerData playerData, PlayerData[] existing)
 	{
-		_world.Connected(player, existing);
+		_world.Connected(playerData, existing);
 	}
-	public void PlayerJoined(PlayerData player)
+	public void PlayerJoined(PlayerData playerData)
 	{
-		_world.PlayerJoined(player);
+		_world.PlayerJoined(playerData);
 	}
-	public void PlayerLeft(PlayerData player)
+	public void PlayerLeft(PlayerData playerData)
 	{
-		_world.PlayerLeft(player);
+		_world.PlayerLeft(playerData);
+	}
+	public void PlayerUpdated(PlayerData playerData)
+	{
+		_world.PlayerUpdated(playerData);
 	}
 	public override void _Ready()
 	{

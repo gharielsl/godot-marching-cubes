@@ -14,7 +14,6 @@ public partial class Player : CharacterBody3D
 	private Node3D _head;
 	private Camera3D _camera;
 	private CollisionShape3D _collision;
-	private MultiplayerSynchronizer _synchronizer;
 	private Vector3 _velocity = new Vector3();
 	private Vector2 _mouseInput = new Vector2();
 	private Vector2 _input = new Vector2();
@@ -29,13 +28,12 @@ public partial class Player : CharacterBody3D
 		_head = GetNode<Node3D>("Head");
 		_camera = _head.GetNode<Camera3D>("Camera");
 		_collision = GetNode<CollisionShape3D>("Collision");
-		_synchronizer = GetNode<MultiplayerSynchronizer>("Synchronizer");
 		_camera.Current = _networkId == Multiplayer.GetUniqueId();
 	}
 	public override void _PhysicsProcess(double delta)
 	{
 		base._PhysicsProcess(delta);
-		if (_synchronizer.GetMultiplayerAuthority() != Multiplayer.GetUniqueId())
+		if (GetMultiplayerAuthority() != Multiplayer.GetUniqueId())
 		{
 			return;
 		}
@@ -85,7 +83,7 @@ public partial class Player : CharacterBody3D
 	public override void _Input(InputEvent @event)
 	{
 		base._Input(@event);
-		if (_synchronizer.GetMultiplayerAuthority() != Multiplayer.GetUniqueId())
+		if (GetMultiplayerAuthority() != Multiplayer.GetUniqueId())
 		{
 			return;
 		}

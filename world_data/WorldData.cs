@@ -145,9 +145,8 @@ public partial class WorldData
         }
 	}
 	// Rpc
-	public void PlayerJoined(PlayerData player)
-	{
-		_players.Add(player);
+	public void PlayerNodeGenerated(PlayerData player)
+    {
 		foreach (var col in _chunks)
 		{
 			foreach (var row in col.Value)
@@ -157,6 +156,11 @@ public partial class WorldData
 				_server.Network.RpcId(player.NetworkId, nameof(_server.Network.ChunkLoaded), chunk.X, chunk.Z, voxels);
 			}
 		}
+	}
+	// Rpc
+	public void PlayerJoined(PlayerData player)
+	{
+		_players.Add(player);
 	}
 	// Rpc
 	public void PlayerLeft(PlayerData player)

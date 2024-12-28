@@ -10,6 +10,7 @@ public partial class World : Node3D
 	private Node3D _chunksNode;
 	private Thread _chunkGenerator;
 	private readonly PackedScene _chunkScene = ResourceLoader.Load<PackedScene>("res://world/chunk.tscn");
+	private readonly Dictionary<int, Player> _playersDict = new();
 	private readonly Dictionary<int, Dictionary<int, Chunk>> _chunks = new();
 	private readonly ConcurrentQueue<Chunk> _generatingChunks = new();
 	private readonly ConcurrentQueue<Chunk> _generatingPriorityChunks = new();
@@ -49,7 +50,7 @@ public partial class World : Node3D
 		}
 	}
 	private void GeneratingLoop()
-    {
+	{
 		while (IsInsideTree())
 		{
 			HandleGeneratingTask(_generatingPriorityChunks);
@@ -57,27 +58,29 @@ public partial class World : Node3D
 			HandleGeneratingTask(_generatingBorderChunks);
 		}
 	}
-	public void Connected(PlayerData player, PlayerData[] existing)
+	public void Connected(PlayerData playerData, PlayerData[] existing)
 	{
 		PackedScene playerScene = ResourceLoader.Load<PackedScene>("res://player/player.tscn");
 		foreach (PlayerData existingPlayer in existing)
 		{
 			Player existingPlayerScene = playerScene.Instantiate<Player>();
 			existingPlayerScene.NetworkId = existingPlayer.NetworkId;
+			_playersDict[(int)existingPlayer.NetworkId] = existingPlayerScene;
 			_players.AddChild(existingPlayerScene);
 		}
 		_player = playerScene.Instantiate<Player>();
-		_player.NetworkId = player.NetworkId;
+		_player.NetworkId = playerData.NetworkId;
 		_players.AddChild(_player);
 	}
-	public void PlayerJoined(PlayerData player)
+	public void PlayerJoined(PlayerData playerData)
 	{
-		if (player.NetworkId == Multiplayer.GetUniqueId())
+		if (playerData.NetworkId == Multiplayer.GetUniqueId())
 		{
 			return;
 		}
 		Player scenePlayer = ResourceLoader.Load<PackedScene>("res://player/player.tscn").Instantiate<Player>();
-		scenePlayer.NetworkId = player.NetworkId;
+		scenePlayer.NetworkId = playerData.NetworkId;
+		_playersDict[(int)playerData.NetworkId] = scenePlayer;
 		_players.AddChild(scenePlayer);
 	}
 	public void PlayerLeft(PlayerData player)
@@ -89,6 +92,14 @@ public partial class World : Node3D
 				_players.RemoveChild(_players.GetChildren()[i]);
 			}
 		}
+	}
+	public void PlayerUpdated(PlayerData playerData)
+	{
+		if (playerData.NetworkId == _player.NetworkId)
+		{
+			return;
+		}
+		_playersDict[(int)playerData.NetworkId].Position = playerData.Position;
 	}
 	public Chunk GetChunk(int x, int z)
 	{
@@ -104,7 +115,6 @@ public partial class World : Node3D
 	}
 	public void ChunkLoaded(int x, int z, int[] voxels)
 	{
-		GD.Print(x, " ", z, " ", voxels.Length);
 		if (GetChunk(x, z) == null)
 		{
 			if (!_chunks.ContainsKey(x))
@@ -126,20 +136,20 @@ public partial class World : Node3D
 	}
 	public void ChunkUnloaded(int x, int z)
 	{
-        Chunk chunk = GetChunk(x, z);
-        if (chunk != null)
-        {
-            chunk.QueueFree();
-            if (_chunks.ContainsKey(x))
-            {
-                _chunks[x].Remove(z);
-                if (_chunks[x].Count == 0)
-                {
-                    _chunks.Remove(x);
-                }
-            }
-        }
-    }
+		Chunk chunk = GetChunk(x, z);
+		if (chunk != null)
+		{
+			chunk.QueueFree();
+			if (_chunks.ContainsKey(x))
+			{
+				_chunks[x].Remove(z);
+				if (_chunks[x].Count == 0)
+				{
+					_chunks.Remove(x);
+				}
+			}
+		}
+	}
 	public Player Player
 	{
 		get { return _player; }
