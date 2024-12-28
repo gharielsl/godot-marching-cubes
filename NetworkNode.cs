@@ -23,10 +23,6 @@ public partial class NetworkNode : Node
 		{
 			_game.Connected(player, existingArray);
 		}
-		if (_server != null)
-		{
-			_server.ClientPlayerConnected(player);
-		}
 	}
 	[Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true)]
 	public void PlayerUpdated(Godot.Collections.Dictionary playerDict)
