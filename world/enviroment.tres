@@ -1,0 +1,18 @@
+[gd_resource type="Environment" load_steps=3 format=3 uid="uid://dnott1l2tq08j"]
+
+[ext_resource type="Material" uid="uid://r0crwrd7v5yi" path="res://shaders/sky.tres" id="1_ki66j"]
+
+[sub_resource type="Sky" id="Sky_iajvr"]
+sky_material = ExtResource("1_ki66j")
+
+[resource]
+background_mode = 2
+sky = SubResource("Sky_iajvr")
+ssr_enabled = true
+ssao_enabled = true
+glow_enabled = true
+volumetric_fog_enabled = true
+volumetric_fog_albedo = Color(0.505882, 0.505882, 0.505882, 1)
+volumetric_fog_emission = Color(0.423529, 0.423529, 0.423529, 1)
+volumetric_fog_anisotropy = 0.6
+volumetric_fog_sky_affect = 0.2

@@ -1,18 +1,7 @@
-[gd_scene load_steps=7 format=3 uid="uid://b4s25r455x0bf"]
+[gd_scene load_steps=5 format=3 uid="uid://b4s25r455x0bf"]
 
 [ext_resource type="Script" path="res://world/World.cs" id="1_ogu12"]
-[ext_resource type="Material" uid="uid://r0crwrd7v5yi" path="res://shaders/sky.tres" id="2_8l2do"]
-
-[sub_resource type="Sky" id="Sky_iajvr"]
-sky_material = ExtResource("2_8l2do")
-
-[sub_resource type="Environment" id="Environment_17pbx"]
-background_mode = 2
-sky = SubResource("Sky_iajvr")
-ssr_enabled = true
-ssao_enabled = true
-volumetric_fog_enabled = true
-volumetric_fog_density = 0.01
+[ext_resource type="Environment" uid="uid://dnott1l2tq08j" path="res://world/enviroment.tres" id="2_jjt14"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_2doan"]
 size = Vector3(10, 1, 10)
@@ -24,14 +13,13 @@ size = Vector3(10, 1, 10)
 script = ExtResource("1_ogu12")
 
 [node name="Environment" type="WorldEnvironment" parent="."]
-environment = SubResource("Environment_17pbx")
+environment = ExtResource("2_jjt14")
 
 [node name="Sun" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.857563, -0.263816, 0.441574, 0, 0.858459, 0.512882, -0.51438, -0.439829, 0.736183, 0, 0, 0)
+transform = Transform3D(0.791659, -0.573568, 0.210466, 0.329682, 0.691064, 0.643226, -0.51438, -0.439829, 0.736182, 0, 0, 0)
 light_energy = 0.5
-shadow_enabled = true
-shadow_opacity = 0.5
-shadow_blur = 4.0
+shadow_opacity = 0.7
+shadow_blur = 1.6
 
 [node name="Moon" type="DirectionalLight3D" parent="."]
 light_color = Color(0.272161, 0.349195, 0.862709, 1)

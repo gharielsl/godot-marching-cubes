@@ -47,4 +47,43 @@ public class GeometrySmoothing
         vertexSums[vertexIndex] = vertexSum + neighborPosition;
         vertexCounts[vertexIndex] = vertexCounts[vertexIndex] + 1;
     }
+    public static void SubdivideGeometry(List<Vector3> positions, List<int> indices)
+    {
+        Dictionary<(int, int), int> midpointCache = new Dictionary<(int, int), int>();
+        List<int> newIndices = new List<int>();
+
+        for (int i = 0; i < indices.Count; i += 3)
+        {
+            int i0 = indices[i];
+            int i1 = indices[i + 1];
+            int i2 = indices[i + 2];
+
+            int m01 = GetOrCreateMidpoint(i0, i1, positions, midpointCache);
+            int m12 = GetOrCreateMidpoint(i1, i2, positions, midpointCache);
+            int m20 = GetOrCreateMidpoint(i2, i0, positions, midpointCache);
+
+            newIndices.AddRange(new[] {
+                i0, m01, m20,
+                m01, i1, m12,
+                m20, m12, i2,
+                m01, m12, m20
+            });
+        }
+        indices.Clear();
+        indices.AddRange(newIndices);
+    }
+    private static int GetOrCreateMidpoint(int i0, int i1, List<Vector3> positions, Dictionary<(int, int), int> cache)
+    {
+        (int, int) edgeKey = i0 < i1 ? (i0, i1) : (i1, i0);
+        if (cache.TryGetValue(edgeKey, out int midpointIndex))
+        {
+            return midpointIndex;
+        }
+        Vector3 midpoint = (positions[i0] + positions[i1]) * 0.5f;
+        midpointIndex = positions.Count;
+        positions.Add(midpoint);
+        cache[edgeKey] = midpointIndex;
+
+        return midpointIndex;
+    }
 }

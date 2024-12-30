@@ -11,13 +11,16 @@ public partial class Player : CharacterBody3D
 
 	private int _networkId;
 	private float _jolt = 1;
+	private bool _shouldTeleportToTop = false;
 	private Node3D _head;
 	private Camera3D _camera;
 	private CollisionShape3D _collision;
 	private RayCast3D _spawnCheck;
+	private PauseMenu _pauseMenu;
 	private Vector3 _velocity = new Vector3();
 	private Vector2 _mouseInput = new Vector2();
 	private Vector2 _input = new Vector2();
+	public Input.MouseModeEnum MouseModeBeforePause;
 	public override void _EnterTree()
 	{
 		base._EnterTree();
@@ -30,6 +33,7 @@ public partial class Player : CharacterBody3D
 		_camera = _head.GetNode<Camera3D>("Camera");
 		_collision = GetNode<CollisionShape3D>("Collision");
 		_spawnCheck = GetNode<RayCast3D>("SpawnCheck");
+		_pauseMenu = GetNode<PauseMenu>("PauseMenu");
 		_camera.Current = _networkId == Multiplayer.GetUniqueId();
 	}
 	public override void _PhysicsProcess(double delta)
@@ -39,11 +43,29 @@ public partial class Player : CharacterBody3D
 		{
 			return;
 		}
+		Global.Player = this;
+
+		if (_shouldTeleportToTop)
+		{
+			_spawnCheck.Enabled = true;
+			_spawnCheck.ForceRaycastUpdate();
+			if (_spawnCheck.IsColliding())
+			{
+				GlobalPosition = _spawnCheck.GetCollisionPoint() + new Vector3(0, 1.5f, 0);
+				_spawnCheck.Enabled = false;
+				_shouldTeleportToTop = false;
+			}
+		}
+
 		_input = Input.GetVector("move_left", "move_right", "move_backward", "move_forward");
 		Vector3 direction = new Vector3();
 		direction += _input.X * _head.GlobalTransform.Basis.X;
 		direction -= _input.Y * _head.GlobalTransform.Basis.Z;
-		_velocity = _velocity.Lerp(direction * Speed, Acceleration * _jolt * (float)delta);
+		Vector2 surfaceVelocity = new Vector2(_velocity.X, _velocity.Z);
+		surfaceVelocity = surfaceVelocity.Lerp(new Vector2(direction.X, direction.Z) * Speed, Acceleration * _jolt * (float)delta);
+		//_velocity = _velocity.Lerp(direction * Speed, Acceleration * _jolt * (float)delta);
+		_velocity.X = surfaceVelocity.X;
+		_velocity.Z = surfaceVelocity.Y;
 
 		if (IsOnFloor())
 		{
@@ -67,7 +89,7 @@ public partial class Player : CharacterBody3D
 		_mouseInput = Vector2.Zero;
 		if (IsOnFloor())
 		{
-			Vector2 surfaceVelocity = new Vector2(_velocity.X, _velocity.Z);
+			surfaceVelocity = new Vector2(_velocity.X, _velocity.Z);
 			if (surfaceVelocity.Length() > MaxSpeed)
 			{
 				surfaceVelocity = surfaceVelocity.Normalized() * MaxSpeed;
@@ -84,10 +106,12 @@ public partial class Player : CharacterBody3D
 	}
 	public void TeleportToTop()
 	{
-		_spawnCheck.Enabled = true;
-		_spawnCheck.ForceRaycastUpdate();
-		GlobalPosition = _spawnCheck.GetCollisionPoint() + new Vector3(0, 1.5f, 0);
-		_spawnCheck.Enabled = false;
+		_shouldTeleportToTop = true;
+	}
+	public void UnPause()
+	{
+		Input.MouseMode = MouseModeBeforePause;
+		_pauseMenu.Visible = false;
 	}
 	public override void _Input(InputEvent @event)
 	{
@@ -96,11 +120,7 @@ public partial class Player : CharacterBody3D
 		{
 			return;
 		}
-		if (Input.MouseMode != Input.MouseModeEnum.Captured)
-		{
-			return;
-		}
-		if (@event is InputEventMouseMotion mouseEvent)
+		if (Input.MouseMode == Input.MouseModeEnum.Captured && @event is InputEventMouseMotion mouseEvent)
 		{
 			_mouseInput = mouseEvent.Relative;
 		}

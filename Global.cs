@@ -8,7 +8,9 @@ public partial class Global : Node
     public static bool FailedToConnect = false;
     public static float MouseSensitivity = 0.2f;
     public static bool IsHost = false;
+    public static Player Player;
     public static Global GlobalNode;
+    public static NetworkNode Network;
 
     public Node Main;
     

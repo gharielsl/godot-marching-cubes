@@ -1,0 +1,54 @@
+[gd_scene load_steps=3 format=3 uid="uid://4553i4uuj2a0"]
+
+[ext_resource type="Script" path="res://ui/Disconnected.cs" id="1_awtcm"]
+[ext_resource type="PackedScene" uid="uid://b4s25r455x0bf" path="res://world/world.tscn" id="2_da5j5"]
+
+[node name="Disconnected" type="Node3D"]
+
+[node name="Ui" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_awtcm")
+
+[node name="Container" type="VBoxContainer" parent="Ui"]
+custom_minimum_size = Vector2(584, 0)
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 284.0
+offset_right = -284.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="MessageContainer" type="HBoxContainer" parent="Ui/Container"]
+layout_mode = 2
+
+[node name="Message" type="Label" parent="Ui/Container/MessageContainer"]
+custom_minimum_size = Vector2(584, 72)
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "Disconnected from server"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="OkContainer" type="HBoxContainer" parent="Ui/Container"]
+layout_mode = 2
+
+[node name="Ok" type="Button" parent="Ui/Container/OkContainer"]
+custom_minimum_size = Vector2(584, 72)
+layout_mode = 2
+focus_mode = 0
+text = "Ok"
+
+[node name="World" parent="." instance=ExtResource("2_da5j5")]
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+
+[connection signal="pressed" from="Ui/Container/OkContainer/Ok" to="Ui" method="OkPressed"]

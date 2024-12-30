@@ -19,6 +19,10 @@ public partial class Game : Node3D
 			}
 			Multiplayer.MultiplayerPeer = _network.Peer;
 			_network.Peer.Host.Compress(ENetConnection.CompressionMode.RangeCoder);
+			Multiplayer.ServerDisconnected += () =>
+			{
+				Global.GlobalNode.ChangeSceneToFile("res://ui/disconnected.tscn");
+			};
 		}
 		else
 		{
@@ -77,7 +81,7 @@ public partial class Game : Node3D
 			if (!Connect(Global.MultiplayerAddress, Global.MultiplayerPort))
 			{
 				Global.FailedToConnect = true;
-				Global.GlobalNode.ChangeSceneToFile("res://main.tscn");
+				Global.GlobalNode.ChangeSceneToFile("res://ui/menu.tscn");
 			}
 		}
 	}

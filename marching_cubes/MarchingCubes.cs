@@ -52,8 +52,8 @@ public class MarchingCubes
         }
         int configIndex = GetConfigIndex(cube);
         int configIndexTransparent = GetConfigIndex(transparentCube);
-        IterateEdges(configIndex, position, positions, indices, uniquePositions, false);
-        IterateEdges(configIndexTransparent, position, transparentPositions, transparentIndices, transparentUniquePositions, true);
+        IterateEdges(configIndex, position, positions, indices, uniquePositions, false, cube);
+        IterateEdges(configIndexTransparent, position, transparentPositions, transparentIndices, transparentUniquePositions, true, transparentCube);
     }
     private static void IterateEdges(
         int configIndex,
@@ -61,7 +61,8 @@ public class MarchingCubes
         List<Vector3> positions,
         List<int> indices,
         Dictionary<Vector3, int> uniquePositions,
-        bool isTransparent)
+        bool isTransparent,
+        float[] cube)
     {
         if (configIndex == 0 || configIndex == 255)
         {
@@ -79,7 +80,14 @@ public class MarchingCubes
                 }
                 Vector3 vert1 = position + CubeTables.CornerTable[CubeTables.EdgeTable[index][0]];
                 Vector3 vert2 = position + CubeTables.CornerTable[CubeTables.EdgeTable[index][1]];
-                Vector3 vertPosition = (vert1 + vert2) / 2;
+
+                float vert1Sample = cube[CubeTables.EdgeTable[index][0]];
+                float vert2Sample = cube[CubeTables.EdgeTable[index][1]];
+                float difference = vert2Sample - vert1Sample;
+                if (difference == 0) difference = TerrainSurface;
+                else difference = (TerrainSurface - vert1Sample) / difference;
+                Vector3 vertPosition = vert1 + (vert2 - vert1) * difference;
+
                 if (isTransparent)
                 {
                     vertPosition.Y -= 0.5f;

@@ -18,9 +18,14 @@ public partial class Chunk : StaticBody3D
 	private World _world;
 	private CollisionShape3D _collision;
 	private MeshInstance3D _mesh, _transparentMesh;
+	private Image _texDataImage;
+	private ImageTexture _texData;
+	private byte[] _texDataBuffer;
 	public override void _Ready()
 	{
 		base._Ready();
+		_texDataImage = Image.CreateEmpty(ChunkSizeWithBorder * ChunkSizeWithBorder, WorldData.WorldHeight, false, Image.Format.R8);
+		_texData = ImageTexture.CreateFromImage(_texDataImage);
 		_collision = GetNode<CollisionShape3D>("Collision");
 		_mesh = GetNode<MeshInstance3D>("Mesh");
 		_transparentMesh = GetNode<MeshInstance3D>("TransparentMesh");
@@ -42,6 +47,15 @@ public partial class Chunk : StaticBody3D
 		if (_mesh != null)
 		{
 			_mesh.Dispose();
+		}
+		if (_transparentMesh != null)
+		{
+			_transparentMesh.Dispose();
+		}
+		if (_texData != null)
+		{
+			_texDataImage.Dispose();
+			_texData.Dispose();
 		}
 		_collision.Dispose();
 	}
@@ -79,11 +93,7 @@ public partial class Chunk : StaticBody3D
 									_neighbours[4]._data[oa, y, ri] = GetVoxel(ChunkData.ChunkSize - a - 1, y, ChunkData.ChunkSize - i - 1);
 								}
 								_data[ChunkSizeWithBorder - oa - 1, y, ChunkSizeWithBorder - ri - 1] = _neighbours[4].GetVoxel(a, y, i);
-							}
-							catch (Exception ex)
-							{
-
-							}
+							}catch{}
 						}
 						if (_neighbours[5] != null)
 						{
@@ -95,11 +105,7 @@ public partial class Chunk : StaticBody3D
 									_neighbours[5]._data[oa, y, ChunkSizeWithBorder - ri - 1] = GetVoxel(ChunkData.ChunkSize - a - 1, y, i);
 								}
 								_data[ChunkSizeWithBorder - oa - 1, y, ri] = _neighbours[5].GetVoxel(a, y, ChunkData.ChunkSize - i - 1);
-							}
-							catch (Exception ex)
-							{
-
-							}
+							}catch { }
 
 						}
 						if (_neighbours[6] != null)
@@ -112,12 +118,7 @@ public partial class Chunk : StaticBody3D
 									_neighbours[6]._data[ChunkSizeWithBorder - oa - 1, y, ri] = GetVoxel(a, y, ChunkData.ChunkSize - i - 1);
 								}
 								_data[oa, y, ChunkSizeWithBorder - ri - 1] = _neighbours[6].GetVoxel(ChunkData.ChunkSize - a - 1, y, i);
-							}
-							catch (Exception ex)
-							{
-
-							}
-
+							}catch { }
 						}
 						if (_neighbours[7] != null)
 						{
@@ -129,12 +130,7 @@ public partial class Chunk : StaticBody3D
 									_neighbours[7]._data[ChunkSizeWithBorder - oa - 1, y, ChunkSizeWithBorder - ri - 1] = GetVoxel(a, y, i);
 								}
 								_data[oa, y, ri] = _neighbours[7].GetVoxel(ChunkData.ChunkSize - a - 1, y, ChunkData.ChunkSize - i - 1);
-							}
-							catch (Exception ex)
-							{
-
-							}
-
+							}catch { }
 						}
 						continue;
 					}
@@ -153,12 +149,7 @@ public partial class Chunk : StaticBody3D
 								}
 								_data[ChunkSizeWithBorder - ri, y, oa + BorderSize] = _neighbours[0].GetVoxel(i, y, oa);
 							}
-						}
-						catch (Exception ex)
-						{
-
-						}
-
+						}catch { }
 					}
 					if (_neighbours[1] != null)
 					{
@@ -173,12 +164,7 @@ public partial class Chunk : StaticBody3D
 								}
 								_data[ri - 1, y, oa + BorderSize] = _neighbours[1].GetVoxel(ChunkData.ChunkSize - i - 1, y, oa);
 							}
-						}
-						catch (Exception ex)
-						{
-
-						}
-
+						}catch { }
 					}
 					if (_neighbours[2] != null)
 					{
@@ -193,12 +179,7 @@ public partial class Chunk : StaticBody3D
 								}
 								_data[oa + BorderSize, y, ChunkSizeWithBorder - ri] = _neighbours[2].GetVoxel(oa, y, i);
 							}
-						}
-						catch (Exception ex)
-						{
-
-						}
-
+						}catch { }
 					}
 					if (_neighbours[3] != null)
 					{
@@ -213,11 +194,7 @@ public partial class Chunk : StaticBody3D
 								}
 								_data[oa + BorderSize, y, ri - 1] = _neighbours[3].GetVoxel(oa, y, ChunkData.ChunkSize - i - 1);
 							}
-						}
-						catch (Exception ex)
-						{
-
-						}
+						}catch { }
 					}
 				}
 			}	
@@ -251,11 +228,6 @@ public partial class Chunk : StaticBody3D
 				surfaceTool.Dispose();
 				mesh.Mesh = arrayMesh;
 			}
-			_generating = false;
-			if (OnGenerated != null && mesh == _mesh)
-			{
-				OnGenerated();
-			}
 		});
 	}
 	public void Generate(bool selfOnly)
@@ -271,12 +243,22 @@ public partial class Chunk : StaticBody3D
 		List<Vector3> tranPositions = new();
 		List<int> tranIndices = new();
 		Dictionary<Vector3, int> tranUniquePositions = new();
+		_texDataBuffer = new byte[ChunkSizeWithBorder * ChunkSizeWithBorder * WorldData.WorldHeight];
 		for (int x = 0; x < ChunkSizeWithBorder; x++)
 		{
 			for (int y = 0; y < WorldData.WorldHeight; y++)
 			{
 				for (int z = 0; z < ChunkSizeWithBorder; z++)
 				{
+					Voxel voxel = _data[x, y, z];
+					int voxelId = AirVoxel.ID;
+					if (voxel != null)
+					{
+						voxelId = voxel.Id;
+					}
+					int index = (y * ChunkSizeWithBorder * ChunkSizeWithBorder + (z * ChunkSizeWithBorder + x));
+					byte[] voxelIdBytes = BitConverter.GetBytes(voxelId);
+					_texDataBuffer[index] = (byte)voxelId;
 					MarchingCubes.MarchCube(
 						new Vector3I(x, y, z),
 						_data,
@@ -301,10 +283,22 @@ public partial class Chunk : StaticBody3D
 		}
 		GeometrySmoothing.SmoothGeometry(positions, indices);
 		GeometrySmoothing.SmoothGeometry(tranPositions, tranIndices);
-		Vector3[] collision = new Vector3[indices.Count];
-		for (int i = 0; i < indices.Count; i++)
+		GeometrySmoothing.SubdivideGeometry(positions, indices);
+		List<Vector3> collision = new();
+		for (int i = 0; i < indices.Count; i += 3)
 		{
-			collision[i] = positions[indices[i]];
+			Vector3 v0 = positions[indices[i]];
+			Vector3 v1 = positions[indices[i + 1]];
+			Vector3 v2 = positions[indices[i + 2]];
+			Vector3 center = (v0 + v1 + v2) / 3;
+			if (center.X > BorderSize && center.Z > BorderSize &&
+				center.X <= ChunkData.ChunkSize + BorderSize &&
+				center.Z <= ChunkData.ChunkSize + BorderSize)
+			{
+				collision.Add(v0);
+				collision.Add(v1);
+				collision.Add(v2);
+			}
 		}
 		CreateMesh(positions, indices, _mesh);
 		CreateMesh(tranPositions, tranIndices, _transparentMesh);
@@ -313,10 +307,22 @@ public partial class Chunk : StaticBody3D
 			_collision.Shape.Dispose();
 			if (indices.Count > 0)
 			{
-				((ConcavePolygonShape3D)_collision.Shape).SetFaces(collision);
+				((ConcavePolygonShape3D)_collision.Shape).SetFaces(collision.ToArray());
 			}
+			if (_texDataBuffer != null)
+			{
+				_texDataImage.SetData(_texDataImage.GetWidth(), _texDataImage.GetHeight(), false, _texDataImage.GetFormat(), _texDataBuffer);
+				_texData.Dispose();
+				_texData = ImageTexture.CreateFromImage(_texDataImage);
+				((ShaderMaterial)_mesh.GetActiveMaterial(0)).SetShaderParameter("chunkData", _texData);
+				_texDataBuffer = null;
+			}
+			if (OnGenerated != null)
+			{
+				OnGenerated();
+			}
+			_generating = false;
 		});
-
 	}
 	public void SetData(int x, int z, World world, int[] data)
 	{

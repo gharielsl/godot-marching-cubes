@@ -1,7 +1,20 @@
-[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://bcbv8pets5ltd"]
+[gd_resource type="ShaderMaterial" load_steps=8 format=3 uid="uid://bcbv8pets5ltd"]
 
 [ext_resource type="Shader" path="res://shaders/terrain.gdshader" id="1_rl70o"]
+[ext_resource type="Texture2D" uid="uid://85rfa0avq8ng" path="res://tex/dirt_c.png" id="2_tj25l"]
+[ext_resource type="Texture2D" uid="uid://crpgl4o8ro4w3" path="res://tex/dirt_n.png" id="3_d5tv7"]
+[ext_resource type="Texture2D" uid="uid://cq2dd27yi21dh" path="res://tex/dirt_h.png" id="3_lrby2"]
+[ext_resource type="Texture2D" uid="uid://bcnciu83qjqk6" path="res://tex/grass_c.jpg" id="4_cnr54"]
+[ext_resource type="Texture2D" uid="uid://bsj0ehkrcjnfe" path="res://tex/grass_n.jpg" id="5_1gl50"]
+[ext_resource type="Texture2D" uid="uid://ce6sa1qcx3ixg" path="res://tex/grass_h.jpg" id="6_aukhb"]
 
 [resource]
+resource_local_to_scene = true
 render_priority = 0
 shader = ExtResource("1_rl70o")
+shader_parameter/grass_c = ExtResource("4_cnr54")
+shader_parameter/grass_n = ExtResource("5_1gl50")
+shader_parameter/grass_h = ExtResource("6_aukhb")
+shader_parameter/dirt_c = ExtResource("2_tj25l")
+shader_parameter/dirt_n = ExtResource("3_d5tv7")
+shader_parameter/dirt_h = ExtResource("3_lrby2")

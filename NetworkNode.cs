@@ -5,7 +5,12 @@ public partial class NetworkNode : Node
 	private Server _server;
 	private Game _game;
 	private ENetMultiplayerPeer _peer;
-	public Server Server
+    public override void _Ready()
+    {
+        base._Ready();
+		Global.Network = this;
+    }
+    public Server Server
 	{
 		get { return _server; }
 		set { _server = value; }
@@ -89,4 +94,12 @@ public partial class NetworkNode : Node
 		get { return _peer; }
 		set { _peer = value; }
 	}
+	public void CloseServer()
+    {
+		_peer.Close();
+		_peer.Dispose();
+		Multiplayer.Dispose();
+		GetTree().SetMultiplayer(MultiplayerApi.CreateDefaultInterface());
+		_peer = null;
+    }
 }

@@ -19,6 +19,10 @@
                     {
                         data[x, y, z] = DirtVoxel.Instance;
                     }
+                    if ((int)n == y)
+                    {
+                        data[x, y, z] = GrassVoxel.Instance;
+                    }
                 }
             }
         }

@@ -6,6 +6,7 @@ public partial class Main : Node
 		base._Ready();
 		Voxel.RegisterVoxel(AirVoxel.Instance);
 		Voxel.RegisterVoxel(DirtVoxel.Instance);
+		Voxel.RegisterVoxel(GrassVoxel.Instance);
 		Global.GlobalNode.Main = this;
 	}
 }

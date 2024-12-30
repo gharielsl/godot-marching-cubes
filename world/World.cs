@@ -13,6 +13,7 @@ public partial class World : Node3D
 	private DirectionalLight3D _sun;
 	private DirectionalLight3D _moon;
 	private bool _playerSpawned = false;
+	private bool _playerTeleported = false;
 	private readonly PackedScene _chunkScene = ResourceLoader.Load<PackedScene>("res://world/chunk.tscn");
 	private readonly Dictionary<int, Player> _playersDict = new();
 	private readonly Dictionary<int, Dictionary<int, Chunk>> _chunks = new();
@@ -141,12 +142,13 @@ public partial class World : Node3D
 			WorldDataUtils.WorldToChunk((int)_player.Position.X, (int)_player.Position.Z, out int playerChunkX, out int playerChunkZ, out int _, out int _);
 			if (!_playerSpawned && playerChunkX == x && playerChunkZ == z)
 			{
+				_playerSpawned = true;
 				chunk.OnGenerated = () =>
 				{
-					if (!_playerSpawned)
+					if (!_playerTeleported)
 					{
+						_playerTeleported = true;
 						_player.TeleportToTop();
-						_playerSpawned = true;
 					}
 				};
 			}
@@ -174,7 +176,7 @@ public partial class World : Node3D
 		double timeInDay = worldTime % WorldData.DayDuration;
 		double angleInDegrees = -(timeInDay / WorldData.DayDuration) * 360.0;
 		_sun.Rotation = new Vector3(Mathf.DegToRad((float)angleInDegrees), 0, 0);
-		_moon.Rotation = new Vector3(-Mathf.DegToRad((float)angleInDegrees), 0, 0);
+		_moon.Rotation = new Vector3(-Mathf.DegToRad(180 - (float)angleInDegrees), 0, 0);
 		if (worldTime < WorldData.DayDuration / 2)
 		{
 			_sun.SkyMode = DirectionalLight3D.SkyModeEnum.LightAndSky;
