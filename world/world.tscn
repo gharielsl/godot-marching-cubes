@@ -18,6 +18,7 @@ environment = ExtResource("2_jjt14")
 [node name="Sun" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.791659, -0.573568, 0.210466, 0.329682, 0.691064, 0.643226, -0.51438, -0.439829, 0.736182, 0, 0, 0)
 light_energy = 0.5
+shadow_enabled = true
 shadow_opacity = 0.7
 shadow_blur = 1.6
 

@@ -1,6 +1,6 @@
 using Godot;
 
-public partial class Menu : Node3D
+public partial class Menu : Control
 {
 	private LineEdit _address;
 	private LineEdit _port;
@@ -37,7 +37,7 @@ public partial class Menu : Node3D
 	}
 	private void OptionsClick()
 	{
-		
+		Global.GlobalNode.ChangeSceneToFile("res://ui/options.tscn");
 	}
 	private void LeaveClick()
 	{
@@ -47,9 +47,9 @@ public partial class Menu : Node3D
 	{
 		base._Ready();
 		Input.MouseMode = Input.MouseModeEnum.Visible;
-		_address = GetNode<LineEdit>("MenuUi/Menu/JoinContainer/Address");
-		_port = GetNode<LineEdit>("MenuUi/Menu/JoinContainer/Port");
-		_join = GetNode<Button>("MenuUi/Menu/JoinContainer/Join");
+		_address = GetNode<LineEdit>("Menu/JoinContainer/Address");
+		_port = GetNode<LineEdit>("Menu/JoinContainer/Port");
+		_join = GetNode<Button>("Menu/JoinContainer/Join");
 		if (Global.FailedToConnect)
 		{
 			_join.Text = "Failed to connect";

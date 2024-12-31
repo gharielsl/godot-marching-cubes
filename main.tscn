@@ -1,9 +1,15 @@
-[gd_scene load_steps=3 format=3 uid="uid://cbd6548jxtae0"]
+[gd_scene load_steps=4 format=3 uid="uid://cbd6548jxtae0"]
 
-[ext_resource type="PackedScene" uid="uid://dufn0jy00llwk" path="res://ui/menu.tscn" id="1_b8cvp"]
+[ext_resource type="PackedScene" uid="uid://c6ie7rhwo2kv5" path="res://ui/menu.tscn" id="1_b8cvp"]
 [ext_resource type="Script" path="res://Main.cs" id="1_uqub2"]
+[ext_resource type="PackedScene" uid="uid://b4s25r455x0bf" path="res://world/world.tscn" id="3_tfe5d"]
 
 [node name="Main" type="Node"]
 script = ExtResource("1_uqub2")
 
 [node name="Menu" parent="." instance=ExtResource("1_b8cvp")]
+
+[node name="World" parent="." instance=ExtResource("3_tfe5d")]
+
+[node name="Camera3D" type="Camera3D" parent="World"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)

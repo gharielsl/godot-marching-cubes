@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://f33oe46sr5qj"]
+[gd_scene load_steps=3 format=3 uid="uid://f33oe46sr5qj"]
 
 [ext_resource type="Script" path="res://ui/PauseMenu.cs" id="1_8e104"]
+[ext_resource type="PackedScene" uid="uid://w1guv26hew78" path="res://ui/options.tscn" id="2_hh0sf"]
 
 [node name="PauseMenu" type="Control"]
 process_mode = 3
@@ -54,5 +55,10 @@ layout_mode = 2
 focus_mode = 0
 text = "Leave game"
 
+[node name="Options" parent="." instance=ExtResource("2_hh0sf")]
+visible = false
+layout_mode = 1
+
 [connection signal="pressed" from="Container/ContinueContainer/Continue" to="." method="Continue"]
+[connection signal="pressed" from="Container/OptionsContainer/Options" to="." method="OptionsClick"]
 [connection signal="pressed" from="Container/LeaveContainer/Leave" to="." method="LeaveGame"]

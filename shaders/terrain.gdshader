@@ -129,4 +129,5 @@ void fragment() {
 	}
 	NORMAL_MAP = accumulatedNormal;
 	ALBEDO = isBorder ? vec3(1, 0, 0) : accumulatedColor;
+	ROUGHNESS = 0.7;
 }

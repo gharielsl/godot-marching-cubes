@@ -65,6 +65,7 @@ public partial class Game : Node3D
 	public override void _Ready()
 	{
 		base._Ready();
+		Global.IsInGame = true;
 		_network = GetTree().Root.GetNode<NetworkNode>("NetworkNode");
 		_world = GetNode<World>("World");
 		if (Global.IsHost)
@@ -96,5 +97,10 @@ public partial class Game : Node3D
 				_network.Rpc(nameof(_network.PlayerUpdated), new PlayerData(_world.Player).Dictionary);
 			}
 		}
+	}
+	public override void _ExitTree()
+	{
+		base._ExitTree();
+		Global.IsInGame = false;
 	}
 }

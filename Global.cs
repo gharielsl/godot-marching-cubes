@@ -8,18 +8,23 @@ public partial class Global : Node
     public static bool FailedToConnect = false;
     public static float MouseSensitivity = 0.2f;
     public static bool IsHost = false;
+    public static bool IsInGame = false;
     public static Player Player;
     public static Global GlobalNode;
     public static NetworkNode Network;
-
     public Node Main;
-    
     public void ChangeScene(PackedScene scene)
     {
         if (Main != null)
         {
-            Main.GetChild(0).QueueFree();
-            Main.RemoveChild(Main.GetChild(0));
+            foreach (Node child in Main.GetChildren())
+            {
+                if (child.Name != "World")
+                {
+                    child.QueueFree();
+                    Main.RemoveChild(child);
+                }
+            }
         }
         Main.AddChild(scene.Instantiate());
     }

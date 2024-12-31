@@ -6,7 +6,7 @@ using System.Threading;
 public partial class WorldData
 {
 	public static readonly int WorldHeight = 128;
-	public static readonly int ChunkRenderDistance = 4;
+	public static int ChunkRenderDistance = 8;
 	public static readonly double DayDuration = 24;
 
 	private readonly ConcurrentDictionary<int, ConcurrentDictionary<int, ChunkData>> _chunks = new();

@@ -3,6 +3,14 @@ using System;
 
 public partial class PauseMenu : Control
 {
+	Control _menu;
+	Options _options;
+	public override void _Ready()
+	{
+		base._Ready();
+		_menu = GetNode<Control>("Container");
+		_options = GetNode<Options>("Options");
+	}
 	public override void _Process(double delta)
 	{
 		base._Process(delta);
@@ -22,6 +30,16 @@ public partial class PauseMenu : Control
 				Continue();
 			}
 		}
+	}
+	private void OptionsClick()
+	{
+		_menu.Visible = false;
+		_options.Visible = true;
+	}
+	public void OptionsLeave()
+	{
+		_menu.Visible = true;
+		_options.Visible = false;
 	}
 	private void Pause()
 	{
