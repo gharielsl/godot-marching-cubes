@@ -36,7 +36,7 @@ vertical_alignment = 1
 [node name="RenderDistance" type="HSlider" parent="Container/RenderContainer"]
 custom_minimum_size = Vector2(290, 48)
 layout_mode = 2
-min_value = 1.0
+min_value = 4.0
 max_value = 16.0
 value = 4.0
 

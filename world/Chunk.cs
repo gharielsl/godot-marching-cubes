@@ -283,7 +283,8 @@ public partial class Chunk : StaticBody3D
 		}
 		GeometrySmoothing.SmoothGeometry(positions, indices);
 		GeometrySmoothing.SmoothGeometry(tranPositions, tranIndices);
-		//GeometrySmoothing.SubdivideGeometry(positions, indices);
+		GeometrySmoothing.SubdivideGeometry(positions, indices);
+		GeometrySmoothing.SmoothGeometry(positions, indices);
 		List<Vector3> collision = new();
 		for (int i = 0; i < indices.Count; i += 3)
 		{

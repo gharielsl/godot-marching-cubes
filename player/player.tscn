@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://cperj8loe6vjo"]
+[gd_scene load_steps=6 format=3 uid="uid://cperj8loe6vjo"]
 
 [ext_resource type="Script" path="res://player/Player.cs" id="1_v3i05"]
 [ext_resource type="PackedScene" uid="uid://f33oe46sr5qj" path="res://ui/pause_menu.tscn" id="2_6ctax"]
+[ext_resource type="PackedScene" uid="uid://i6iuy2w7ls4o" path="res://ui/hud.tscn" id="3_l8l5w"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_nu33r"]
 
@@ -25,6 +26,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1000, 0)
 target_position = Vector3(0, -2000, 0)
 collision_mask = 2
+
+[node name="Hud" parent="." instance=ExtResource("3_l8l5w")]
+visible = false
 
 [node name="PauseMenu" parent="." instance=ExtResource("2_6ctax")]
 visible = false
