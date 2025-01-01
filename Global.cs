@@ -10,6 +10,7 @@ public partial class Global : Node
     public static bool IsHost = false;
     public static bool IsInGame = false;
     public static Player Player;
+    public static Game Game;
     public static Global GlobalNode;
     public static NetworkNode Network;
     public Node Main;

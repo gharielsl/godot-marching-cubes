@@ -73,6 +73,19 @@ public partial class World : Node3D
 			HandleGeneratingTask(_generatingBorderChunks);
 		}
 	}
+	public void RegenerateChunks()
+	{
+		foreach (int x in _chunks.Keys)
+		{
+			foreach (int y in _chunks[x].Keys)
+			{
+				foreach (var z in _chunks[x])
+				{
+					_generatingChunks.Enqueue(z.Value);
+				}
+			}
+		}
+	}
 	public void Connected(PlayerData playerData, PlayerData[] existing)
 	{
 		PackedScene playerScene = ResourceLoader.Load<PackedScene>("res://player/player.tscn");

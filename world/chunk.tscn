@@ -14,3 +14,5 @@ script = ExtResource("1_krl6t")
 material_override = ExtResource("2_mwvmu")
 
 [node name="TransparentMesh" type="MeshInstance3D" parent="."]
+
+[node name="SurfaceMeshes" type="Node3D" parent="."]

@@ -1,0 +1,7 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://bkhi2ej4c7fx8"]
+
+[ext_resource type="Shader" path="res://shaders/surface_mesh.gdshader" id="1_gurbi"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_gurbi")

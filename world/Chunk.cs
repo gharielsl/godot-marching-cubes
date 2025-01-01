@@ -7,10 +7,13 @@ public partial class Chunk : StaticBody3D
 {
 	public static readonly int BorderSize = 3;
 	public static readonly int ChunkSizeWithBorder = ChunkData.ChunkSize + BorderSize * 2;
+	public static int SurfaceMeshRenderDistance = 4;
+	public static int SurfaceMeshCount = 5;
 
 	public Action OnGenerated;
 	private Voxel[,,] _data;
 	private readonly ConcurrentQueue<Action> _frameQueue = new();
+	private readonly Dictionary<Voxel, MultiMeshInstance3D> _surfaceMeshes = new();
 	private bool _generating = false, _disposed = false;
 	private int _x, _z;
 	private Chunk[] _neighbours = new Chunk[8];
@@ -34,6 +37,9 @@ public partial class Chunk : StaticBody3D
 	public override void _Process(double delta)
 	{
 		base._Process(delta);
+		Vector3 origin = _world.Player.Position;
+		float distanceToPlayer = new Vector2(origin.X / ChunkData.ChunkSize, origin.Z / ChunkData.ChunkSize).DistanceTo(new Vector2(_x + 0.25f, _z + 0.5f));
+		GetNode<Node3D>("SurfaceMeshes").Visible = distanceToPlayer < SurfaceMeshRenderDistance;
 		while (!_frameQueue.IsEmpty)
 		{
 			_frameQueue.TryDequeue(out Action action);
@@ -200,6 +206,115 @@ public partial class Chunk : StaticBody3D
 			}	
 		}
 	}
+	private void CreateSurfaceMeshes(List<Vector3> triangles)
+	{
+		Dictionary<MultiMeshInstance3D, Dictionary<int, Transform3D>> transforms = new();
+		Dictionary<MultiMeshInstance3D, Dictionary<int, Color>> colors = new();
+		for (int i = 0; i < triangles.Count; i += 3)
+		{
+			Vector3 p1 = triangles[i];
+			Vector3 p2 = triangles[i + 1];
+			Vector3 p3 = triangles[i + 2];
+			GD.Seed((ulong)(p1.GetHashCode() ^ p2.GetHashCode() ^ p3.GetHashCode()));
+			Vector3 normal = -(p2 - p1).Cross(p3 - p1).Normalized();
+			if (normal.Y < 0.5) { continue; }
+			Vector3 center = (p1 + p2 + p3) / 3f;
+			Basis basis = Basis.Identity;
+			basis.Y = normal;
+			basis = basis.Rotated(normal, Mathf.DegToRad(GD.Randf() * 360));
+			basis = basis.Rotated(new(-normal.X, normal.Y, -normal.Z), Mathf.DegToRad(GD.Randf() * 10));
+			Vector3I voxelPosition = new(
+				Mathf.RoundToInt(center.X),
+				Mathf.RoundToInt(center.Y),
+				Mathf.RoundToInt(center.Z));
+			Voxel voxel = _data[voxelPosition.X, voxelPosition.Y, voxelPosition.Z];
+			int voxelId = 0;
+			if (voxel != null) voxelId = voxel.Id;
+			for (int x = 0; x <= 1 && !SurfaceMesh.SurfaceMeshes.ContainsKey(voxelId); x++)
+			{
+				for (int y = 0; y <= 1 && !SurfaceMesh.SurfaceMeshes.ContainsKey(voxelId); y++)
+				{
+					for (int z = 0; z <= 1 && !SurfaceMesh.SurfaceMeshes.ContainsKey(voxelId); z++)
+					{
+						if (voxelPosition.X + x < ChunkSizeWithBorder &&
+							voxelPosition.Y + y < WorldData.WorldHeight &&
+							voxelPosition.Z + z < ChunkSizeWithBorder &&
+							voxelPosition.X + x >= 0 &&
+							voxelPosition.Y + y >= 0 &&
+							voxelPosition.Z + z >= 0)
+						{
+							voxel = _data[voxelPosition.X + x, voxelPosition.Y + y, voxelPosition.Z + z];
+							if (voxel != null) voxelId = voxel.Id;
+						}
+					}
+				}
+			}
+			if (voxel == null || voxel == AirVoxel.Instance)
+			{
+				continue;
+			}
+			if (!SurfaceMesh.SurfaceMeshes.ContainsKey(voxel.Id))
+			{
+				continue;
+			}
+			MultiMeshInstance3D surfaceMesh;
+			SurfaceMesh surfaceMeshInstance = SurfaceMesh.SurfaceMeshes[voxel.Id];
+			if (!_surfaceMeshes.ContainsKey(voxel))
+			{
+				surfaceMesh = new();
+				surfaceMesh.CastShadow = GeometryInstance3D.ShadowCastingSetting.Off;
+				surfaceMesh.Multimesh = new();
+				surfaceMesh.Multimesh.UseCustomData = true;
+				surfaceMesh.Multimesh.TransformFormat = MultiMesh.TransformFormatEnum.Transform3D;
+				surfaceMesh.Multimesh.Mesh = surfaceMeshInstance.Mesh;
+				surfaceMesh.Multimesh.Mesh.SurfaceSetMaterial(0, surfaceMeshInstance.Material);
+				_surfaceMeshes.Add(voxel, surfaceMesh);
+			}
+			surfaceMesh = _surfaceMeshes[voxel];
+			if (!transforms.ContainsKey(surfaceMesh))
+			{
+				transforms.Add(surfaceMesh, new());
+				colors.Add(surfaceMesh, new());
+			}
+			int max = SurfaceMeshCount;
+			for (int j = 0; j < max; j++)
+			{
+				GD.Seed((ulong)(p1.GetHashCode() ^ p2.GetHashCode() ^ p3.GetHashCode() ^ j));
+				float u = (float)GD.Randf();
+				float v = (float)GD.Randf();
+				if (u + v > 1)
+				{
+					u = 1 - u;
+					v = 1 - v;
+				}
+				Vector3 position = p1 * (1 - u - v) + p2 * u + p3 * v;
+				transforms[surfaceMesh].Add(transforms[surfaceMesh].Count, new Transform3D(basis, position));
+				colors[surfaceMesh].Add(colors[surfaceMesh].Count, Colors.White);
+			}
+		}
+		_frameQueue.Enqueue(() =>
+		{
+			foreach (var transform in transforms)
+			{
+				transform.Key.Multimesh.InstanceCount = transform.Value.Count;
+				foreach (var transform2 in transform.Value)
+				{
+					transform.Key.Multimesh.SetInstanceTransform(transform2.Key, transform2.Value);
+				}
+				if (!transform.Key.IsInsideTree())
+				{
+					GetNode<Node3D>("SurfaceMeshes").AddChild(transform.Key);
+				}
+			}
+			foreach (var color in colors)
+			{
+				foreach (var color2 in color.Value)
+				{
+					color.Key.Multimesh.SetInstanceCustomData(color2.Key, color2.Value);
+				}
+			}
+		});
+	}
 	private void CreateMesh(List<Vector3> positions, List<int> indices, MeshInstance3D mesh)
 	{
 		ArrayMesh arrayMesh = null;
@@ -301,6 +416,7 @@ public partial class Chunk : StaticBody3D
 				collision.Add(v2);
 			}
 		}
+		CreateSurfaceMeshes(collision);
 		CreateMesh(positions, indices, _mesh);
 		CreateMesh(tranPositions, tranIndices, _transparentMesh);
 		_frameQueue.Enqueue(() =>

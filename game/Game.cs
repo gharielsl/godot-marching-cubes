@@ -32,6 +32,10 @@ public partial class Game : Node3D
 		Input.MouseMode = Input.MouseModeEnum.Captured;
 		return true;
 	}
+	public void RegenerateChunks()
+	{
+		_world.RegenerateChunks();
+	}
 	public void ChunkLoaded(int x, int z, int[] voxels)
 	{
 		GD.Print("Client chunk loaded at ", x, " ", z, " size: ", voxels.Length);
@@ -70,6 +74,7 @@ public partial class Game : Node3D
 	{
 		base._Ready();
 		Global.IsInGame = true;
+		Global.Game = this;
 		_network = GetTree().Root.GetNode<NetworkNode>("NetworkNode");
 		_world = GetNode<World>("World");
 		if (Global.IsHost)
