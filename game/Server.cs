@@ -51,6 +51,10 @@ public partial class Server : Node
     {
 		_world.PlayerUpdated(player);
 	}
+	public void PlaceVoxels(Vector3I[] positions, int[] voxels)
+    {
+		_world.PlaceVoxels(positions, voxels);
+	}
 	public override void _Ready()
 	{
 		base._Ready();

@@ -28,11 +28,16 @@ public class WorldDataUtils
 	}
 	public static void WorldToChunk(int worldX, int worldZ, out int chunkX, out int chunkZ, out int inChunkX, out int inChunkZ)
     {
-		chunkX = (int)Math.Floor((double)worldX / ChunkData.ChunkSize);
-		chunkZ = (int)Math.Floor((double)worldZ / ChunkData.ChunkSize);
-		inChunkX = worldX % ChunkData.ChunkSize;
-		inChunkZ = worldZ % ChunkData.ChunkSize;
-		inChunkX = inChunkX < 0 ? inChunkX + ChunkData.ChunkSize : inChunkX;
-		inChunkZ = inChunkZ < 0 ? inChunkZ + ChunkData.ChunkSize : inChunkZ;
+		chunkX = Mathf.FloorToInt(worldX / (double)ChunkData.ChunkSize);
+		chunkZ = Mathf.FloorToInt(worldZ / (double)ChunkData.ChunkSize);
+		inChunkX = (worldX % ChunkData.ChunkSize + ChunkData.ChunkSize) % ChunkData.ChunkSize;
+		inChunkZ = (worldZ % ChunkData.ChunkSize + ChunkData.ChunkSize) % ChunkData.ChunkSize;
+	}
+	public static Vector3I ChunkToWorld(int x, int y, int z, int chunkX, int chunkZ)
+    {
+		return new Vector3I(
+			Mathf.RoundToInt(x + chunkX * ChunkData.ChunkSize),
+			Mathf.RoundToInt(y),
+			Mathf.RoundToInt(z + chunkZ * ChunkData.ChunkSize));
 	}
 }

@@ -7,7 +7,7 @@ public partial class WorldData
 {
 	public static readonly int WorldHeight = 128;
 	public static int ChunkRenderDistance = 8;
-	public static readonly double DayDuration = 24;
+	public static readonly double DayDuration = 24 * 60;
 
 	private readonly ConcurrentDictionary<int, ConcurrentDictionary<int, ChunkData>> _chunks = new();
 	private readonly Dictionary<int, PlayerData> _players = new();
@@ -152,6 +152,20 @@ public partial class WorldData
 	public void PlayerLeft(PlayerData player)
 	{
 		_players.Remove(player.NetworkId);
+	}
+	// Rpc
+	public void PlaceVoxels(Vector3I[] positions, int[] voxels)
+	{
+		for (int i = 0; i < positions.Length; i++)
+		{
+			Vector3I position = positions[i];
+			WorldDataUtils.WorldToChunk(position.X, position.Z, out int chunkX, out int chunkZ, out int inChunkX, out int inChunkZ);
+			ChunkData chunk = GetChunk(chunkX, chunkZ);
+			if (chunk != null && Voxel.Voxels.ContainsKey(voxels[i]))
+			{
+				chunk.SetVoxel(inChunkX, position.Y, inChunkZ, Voxel.Voxels[voxels[i]]);
+			}
+		}
 	}
 	public WorldData(Server server)
 	{

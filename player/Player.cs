@@ -104,6 +104,44 @@ public partial class Player : CharacterBody3D
 		Velocity = _velocity;
 		MoveAndSlide();
 	}
+	private void PlaceVoxel(Voxel voxel)
+	{
+		Vector2 center = GetWindow().GetVisibleRect().GetCenter();
+		Vector3 origin = _camera.ProjectRayOrigin(center);
+		Vector3 end = origin + _camera.ProjectRayNormal(center) * 100;
+		PhysicsRayQueryParameters3D query = PhysicsRayQueryParameters3D.Create(origin, end);
+		Godot.Collections.Dictionary result = GetWorld3D().DirectSpaceState.IntersectRay(query);
+		if (result == null || result.Count == 0)
+		{
+			return;
+		}
+		Vector3 position = (Vector3)result["position"];
+		Vector3 normal = (Vector3)result["normal"];
+		Node3D collider = (Node3D)result["collider"];
+		if (collider is Chunk chunk)
+		{
+			position -= chunk.Position;
+			Vector3I positionI = new((int)position.X, (int)position.Y, (int)position.Z);
+			Godot.Collections.Array<Vector3I> positions = new();
+			positions.Resize(8);
+			int[] voxels = new int[8];
+			int i = 0;
+			for (int x = 0; x <= 1; x++)
+			{
+				for (int y = 0; y <= 1; y++)
+				{
+					for (int z = 0; z <= 1; z++)
+					{
+						Vector3I currentPosition = positionI + new Vector3I(x - Chunk.BorderSize, y, z - Chunk.BorderSize);
+						positions[i] = WorldDataUtils.ChunkToWorld(currentPosition.X, currentPosition.Y, currentPosition.Z, chunk.X, chunk.Z);
+						voxels[i] = voxel.Id;
+						i++;
+					}
+				}
+			}
+			Global.Network.Rpc(nameof(Global.Network.PlaceVoxels), positions, voxels);
+		}
+	}
 	public void TeleportToTop()
 	{
 		_shouldTeleportToTop = true;
@@ -123,6 +161,14 @@ public partial class Player : CharacterBody3D
 		if (Input.MouseMode == Input.MouseModeEnum.Captured && @event is InputEventMouseMotion mouseEvent)
 		{
 			_mouseInput = mouseEvent.Relative;
+		}
+		if (Input.IsActionJustPressed("break"))
+		{
+			PlaceVoxel(AirVoxel.Instance);
+		}
+		if (Input.IsActionJustPressed("place"))
+		{
+			PlaceVoxel(DirtVoxel.Instance);
 		}
 	}
 	public int NetworkId

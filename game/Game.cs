@@ -62,6 +62,10 @@ public partial class Game : Node3D
 	{
 		_world.WorldTimeUpdated(worldTime);
 	}
+	public void PlaceVoxels(Vector3I[] positions, int[] voxels)
+	{
+		_world.PlaceVoxels(positions, voxels);
+	}
 	public override void _Ready()
 	{
 		base._Ready();

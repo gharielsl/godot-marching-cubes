@@ -84,6 +84,23 @@ public partial class NetworkNode : Node
 			_game.WorldTimeUpdated(worldTime);
 		}
     }
+	[Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true)]
+	public void PlaceVoxels(Godot.Collections.Array<Vector3I> positions, int[] voxels)
+    {
+		Vector3I[] positionsArray = new Vector3I[positions.Count];
+		for (int i = 0; i < positions.Count; i++)
+        {
+			positionsArray[i] = positions[i];
+        }
+		if (Game != null)
+        {
+			Game.PlaceVoxels(positionsArray, voxels);
+        }
+		if (Server != null)
+        {
+			Server.PlaceVoxels(positionsArray, voxels);
+		}
+    }
 	public Game Game
 	{
 		get { return _game; }

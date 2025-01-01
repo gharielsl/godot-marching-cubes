@@ -1,5 +1,7 @@
 shader_type spatial;
 
+//#define DEBUG
+
 #define WORLD_HEIGHT 128
 #define BORDER_SIZE 3
 #define CHUNK_SIZE 10
@@ -91,10 +93,18 @@ vec3 getVoxelColor(int voxelId, out vec3 normalTex, out bool hasNormal) {
 void fragment() {
 	bool isBorder = false; // debug
 	if (position.x < float(BORDER_SIZE) || position.x > float(CHUNK_SIZE + BORDER_SIZE)) {
+#ifdef DEBUG
+		isBorder = true;
+#else
 		discard;
+#endif
 	}
 	if (position.z < float(BORDER_SIZE) || position.z > float(CHUNK_SIZE + BORDER_SIZE)) {
+#ifdef DEBUG
+		isBorder = true;
+#else
 		discard;
+#endif
 	}
 	vec3 localPosition = position - vec3(ivec3(position));
 	vec3 accumulatedColor = vec3(0.0);

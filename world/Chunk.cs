@@ -358,6 +358,14 @@ public partial class Chunk : StaticBody3D
 		}
 		return _data[x + BorderSize, y, z + BorderSize];
 	}
+	public void SetVoxel(int x, int y, int z, Voxel voxel)
+	{
+		if (x < 0 || y < 0 || z < 0 || x >= ChunkData.ChunkSize || y >= WorldData.WorldHeight || z >= ChunkData.ChunkSize)
+		{
+			return;
+		}
+		_data[x + BorderSize, y, z + BorderSize] = voxel;
+	}
 	public int X
 	{
 		get { return _x; }

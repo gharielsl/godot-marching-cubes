@@ -190,6 +190,26 @@ public partial class World : Node3D
 			_environment.Environment.VolumetricFogEmission = Color.FromHtml("#04001b");
 		}
 	}
+	public void PlaceVoxels(Vector3I[] positions, int[] voxels)
+	{
+		HashSet<Chunk> toUpdate = new();
+		for (int i = 0; i < positions.Length; i++)
+		{
+			Vector3I position = positions[i];
+			WorldDataUtils.WorldToChunk(position.X, position.Z, out int chunkX, out int chunkZ, out int inChunkX, out int inChunkZ);
+			Chunk chunk = GetChunk(chunkX, chunkZ);
+			if (chunk != null && Voxel.Voxels.ContainsKey(voxels[i]))
+			{
+				GD.Print("Chunk ", new Vector3I(inChunkX, position.Y, inChunkZ), " ", chunkX, " ", chunkZ);
+				chunk.SetVoxel(inChunkX, position.Y, inChunkZ, Voxel.Voxels[voxels[i]]);
+				toUpdate.Add(chunk);
+			}
+		}
+		foreach (Chunk chunk in toUpdate)
+		{
+			_generatingPriorityChunks.Enqueue(chunk);
+		}
+	}
 	public Player Player
 	{
 		get { return _player; }
