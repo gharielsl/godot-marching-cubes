@@ -53,14 +53,17 @@ public partial class World : Node3D
 				HandleGeneratingTask(_generatingBorderChunks);
 			}
 			queue.TryPeek(out Chunk chunk);
-			if (chunk.IsDisposed)
+			if (chunk != null)
 			{
-				queue.TryDequeue(out _);
-			}
-			else if (chunk.IsNodeReady() && !chunk.IsGenerating)
-			{
-				queue.TryDequeue(out chunk);
-				chunk.Generate(queue == _generatingBorderChunks);
+				if (chunk.IsDisposed)
+				{
+					queue.TryDequeue(out _);
+				}
+				else if (chunk.IsNodeReady() && !chunk.IsGenerating)
+				{
+					queue.TryDequeue(out chunk);
+					chunk.Generate(queue == _generatingBorderChunks);
+				}
 			}
 		}
 	}
@@ -75,16 +78,16 @@ public partial class World : Node3D
 	}
 	public void RegenerateChunks()
 	{
-		foreach (int x in _chunks.Keys)
-		{
-			foreach (int y in _chunks[x].Keys)
-			{
-				foreach (var z in _chunks[x])
-				{
-					_generatingChunks.Enqueue(z.Value);
-				}
-			}
-		}
+		//foreach (int x in _chunks.Keys)
+		//{
+		//	foreach (int y in _chunks[x].Keys)
+		//	{
+		//		foreach (var z in _chunks[x])
+		//		{
+		//			_generatingChunks.Enqueue(z.Value);
+		//		}
+		//	}
+		//}
 	}
 	public void Connected(PlayerData playerData, PlayerData[] existing)
 	{
