@@ -14,6 +14,7 @@ public partial class World : Node3D
 	private DirectionalLight3D _moon;
 	private bool _playerSpawned = false;
 	private bool _playerTeleported = false;
+	private bool _isInsideTree = false;
 	private readonly PackedScene _chunkScene = ResourceLoader.Load<PackedScene>("res://world/chunk.tscn");
 	private readonly Dictionary<int, Player> _playersDict = new();
 	private readonly Dictionary<int, Dictionary<int, Chunk>> _chunks = new();
@@ -23,6 +24,7 @@ public partial class World : Node3D
 	public override void _Ready()
 	{
 		base._Ready();
+		_isInsideTree = true;
 		_players = GetNode<Node3D>("Players");
 		_chunksNode = GetNode<Node3D>("Chunks");
 		_environment = GetNode<WorldEnvironment>("Environment");
@@ -30,6 +32,11 @@ public partial class World : Node3D
 		_moon = GetNode<DirectionalLight3D>("Moon");
 		_chunkGenerator = new Thread(GeneratingLoop);
 		_chunkGenerator.Start();
+	}
+	public override void _ExitTree()
+	{
+		base._ExitTree();
+		_isInsideTree = false;
 	}
 	private void HandleGeneratingTask(ConcurrentQueue<Chunk> queue)
 	{
@@ -59,7 +66,7 @@ public partial class World : Node3D
 	}
 	private void GeneratingLoop()
 	{
-		while (IsInsideTree())
+		while (_isInsideTree)
 		{
 			HandleGeneratingTask(_generatingPriorityChunks);
 			HandleGeneratingTask(_generatingChunks);

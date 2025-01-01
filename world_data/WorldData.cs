@@ -16,7 +16,7 @@ public partial class WorldData
 	private readonly ConcurrentQueue<ChunkData> _generatedChunks = new();
 	private readonly ConcurrentDictionary<ChunkData, int[]> _generatedChunksData = new();
 	private readonly Server _server;
-	private Thread _chunkGenerator;
+	private readonly Thread _chunkGenerator;
 	private double _worldTime = 0;
 	private void GeneratingLoop()
 	{
