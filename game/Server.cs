@@ -11,14 +11,17 @@ public partial class Server : Node
 	private void Listen(short port)
 	{
 		_port = port;
-		_network.Peer = new ENetMultiplayerPeer();
-		Error error = _network.Peer.CreateServer(port);
-		if (error != Error.Ok)
-		{
-			GD.PrintErr(error);
+		if (_network.Peer == null)
+        {
+			_network.Peer = new ENetMultiplayerPeer();
+			Error error = _network.Peer.CreateServer(port);
+			if (error != Error.Ok)
+			{
+				GD.PrintErr(error);
+			}
+			Multiplayer.MultiplayerPeer = _network.Peer;
+			_network.Peer.Host.Compress(ENetConnection.CompressionMode.RangeCoder);
 		}
-		Multiplayer.MultiplayerPeer = _network.Peer;
-		_network.Peer.Host.Compress(ENetConnection.CompressionMode.RangeCoder);
 		GD.Print("Server opened on: ", port);
 	}
 	public void PeerConnected(long id)
@@ -73,6 +76,17 @@ public partial class Server : Node
     {
         base._Process(delta);
 		_world.Update(delta);
+    }
+    public override void _ExitTree()
+    {
+        base._ExitTree();
+		foreach (int peer in _world.Players.Keys)
+        {
+			if (peer != 1)
+            {
+				_network.Peer.DisconnectPeer(peer, true);
+			}
+		}
     }
     public short Port
 	{

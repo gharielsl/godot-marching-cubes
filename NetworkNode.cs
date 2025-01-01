@@ -111,12 +111,4 @@ public partial class NetworkNode : Node
 		get { return _peer; }
 		set { _peer = value; }
 	}
-	public void CloseServer()
-    {
-		_peer.Close();
-		_peer.Dispose();
-		Multiplayer.Dispose();
-		GetTree().SetMultiplayer(MultiplayerApi.CreateDefaultInterface());
-		_peer = null;
-    }
 }

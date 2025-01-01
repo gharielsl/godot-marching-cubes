@@ -50,7 +50,6 @@ public partial class PauseMenu : Control
 	private void LeaveGame()
 	{
 		GetTree().Paused = false;
-		Global.Network.CloseServer();
 		Global.GlobalNode.ChangeSceneToFile("res://ui/menu.tscn");
 	}
 	private void Continue()

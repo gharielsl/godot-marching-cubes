@@ -200,7 +200,6 @@ public partial class World : Node3D
 			Chunk chunk = GetChunk(chunkX, chunkZ);
 			if (chunk != null && Voxel.Voxels.ContainsKey(voxels[i]))
 			{
-				GD.Print("Chunk ", new Vector3I(inChunkX, position.Y, inChunkZ), " ", chunkX, " ", chunkZ);
 				chunk.SetVoxel(inChunkX, position.Y, inChunkZ, Voxel.Voxels[voxels[i]]);
 				toUpdate.Add(chunk);
 			}

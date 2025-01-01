@@ -63,7 +63,6 @@ public partial class Player : CharacterBody3D
 		direction -= _input.Y * _head.GlobalTransform.Basis.Z;
 		Vector2 surfaceVelocity = new Vector2(_velocity.X, _velocity.Z);
 		surfaceVelocity = surfaceVelocity.Lerp(new Vector2(direction.X, direction.Z) * Speed, Acceleration * _jolt * (float)delta);
-		//_velocity = _velocity.Lerp(direction * Speed, Acceleration * _jolt * (float)delta);
 		_velocity.X = surfaceVelocity.X;
 		_velocity.Z = surfaceVelocity.Y;
 
@@ -102,6 +101,10 @@ public partial class Player : CharacterBody3D
 			_velocity.Z = surfaceVelocity.Y;
 		}
 		Velocity = _velocity;
+		if (IsOnFloor())
+		{
+			Velocity *= (Velocity.Dot(GetFloorNormal()) + 4) / 4;
+		}
 		MoveAndSlide();
 	}
 	private void PlaceVoxel(Voxel voxel)
