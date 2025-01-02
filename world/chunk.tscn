@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://dkgbg7j4xkxr1"]
+[gd_scene load_steps=4 format=3 uid="uid://dkgbg7j4xkxr1"]
 
 [ext_resource type="Script" path="res://world/Chunk.cs" id="1_krl6t"]
 [ext_resource type="Material" uid="uid://bcbv8pets5ltd" path="res://shaders/terrain.tres" id="2_mwvmu"]
+[ext_resource type="Material" uid="uid://b1aagpaohp61e" path="res://shaders/water.tres" id="3_tdap0"]
 
 [node name="Chunk" type="StaticBody3D"]
 collision_layer = 3
@@ -14,5 +15,6 @@ script = ExtResource("1_krl6t")
 material_override = ExtResource("2_mwvmu")
 
 [node name="TransparentMesh" type="MeshInstance3D" parent="."]
+material_override = ExtResource("3_tdap0")
 
 [node name="SurfaceMeshes" type="Node3D" parent="."]

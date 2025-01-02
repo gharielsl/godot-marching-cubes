@@ -19,6 +19,9 @@ uniform sampler2D dirt_h;
 uniform sampler2D stone_c;
 uniform sampler2D stone_n;
 uniform sampler2D stone_h;
+uniform sampler2D sand_c;
+uniform sampler2D sand_n;
+uniform sampler2D sand_h;
 uniform sampler2D chunkData;
 
 vec4 sampleTex(sampler2D sampler, sampler2D samplerWall, float scale, vec3 vertex, vec3 faceNormal) {
@@ -62,7 +65,7 @@ float getHeight(vec3 vertex, vec3 faceNormal) {
 			for (int z = -1; z <= 2; z++) {
 				ivec3 currentPosition = ivec3(vertex) + ivec3(x, y, z);
 				int voxelId = getVoxelId(currentPosition);
-				if (voxelId == 0) continue;
+				if (voxelId == 0 || voxelId == 5) continue; // air or water
 				accumulatedHeight += getVoxelHeight(voxelId, vertex, faceNormal);
 				totalHeightWeight++;
 			}
@@ -92,6 +95,11 @@ vec3 getVoxelColor(int voxelId, out vec3 normalTex, out bool hasNormal) {
 		hasNormal = true;
 		normalTex = sampleTex(stone_n, stone_n, 1.0, position, normal).xyz;
 		return sampleTex(stone_c, stone_c, 1.0, position, normal).xyz;
+	}
+	if (voxelId == 4) {
+		hasNormal = true;
+		normalTex = sampleTex(sand_n, sand_n, 1.0, position, normal).xyz;
+		return sampleTex(sand_c, sand_c, 1.0, position, normal).xyz;
 	}
 	normalTex = normal;
 	hasNormal = false;
@@ -124,7 +132,7 @@ void fragment() {
 			for (int z = -1; z <= 2; z++) {
 				ivec3 currentPosition = ivec3(position) + ivec3(x, y, z);
 				int voxelId = getVoxelId(currentPosition);
-				if (voxelId == 0) continue;
+				if (voxelId == 0 || voxelId == 5) continue; // air or water
 				bool hasNormal;
 				vec3 normalTex;
 				vec3 color = getVoxelColor(voxelId, normalTex, hasNormal);

@@ -1,3 +1,4 @@
+using Godot;
 using System.Collections.Generic;
 
 public partial class Voxel
@@ -5,6 +6,7 @@ public partial class Voxel
 	public static readonly Dictionary<int, Voxel> Voxels = new();
 	public static void RegisterVoxel(Voxel voxel)
 	{
+		GD.Print(voxel, voxel.Id);
 		Voxels.Add(voxel.Id, voxel);
 	}
 	private readonly int _id;

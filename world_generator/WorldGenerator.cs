@@ -26,11 +26,19 @@ public class WorldGenerator
     {
         if (noise <= 0)
         {
-
+            return ForestBiome.Instance;
         }
-        else
+        if (noise <= 0.25)
         {
-
+            return BeachBiome.Instance;
+        }
+        if (noise <= 0.5)
+        {
+            return RiverBiome.Instance;
+        }
+        if (noise <= 0.75)
+        {
+            return BeachBiome.Instance;
         }
         return ForestBiome.Instance;
     }
