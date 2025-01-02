@@ -232,7 +232,7 @@ public partial class Chunk : StaticBody3D
 			if (voxel != null) voxelId = voxel.Id;
 			for (int x = 0; x <= 1 && !SurfaceMesh.SurfaceMeshes.ContainsKey(voxelId); x++)
 			{
-				for (int y = 0; y <= 1 && !SurfaceMesh.SurfaceMeshes.ContainsKey(voxelId); y++)
+				for (int y = 0; y >= -1 && !SurfaceMesh.SurfaceMeshes.ContainsKey(voxelId); y--)
 				{
 					for (int z = 0; z <= 1 && !SurfaceMesh.SurfaceMeshes.ContainsKey(voxelId); z++)
 					{
@@ -400,6 +400,8 @@ public partial class Chunk : StaticBody3D
 		GeometrySmoothing.SmoothGeometry(tranPositions, tranIndices);
 		GeometrySmoothing.SubdivideGeometry(positions, indices);
 		GeometrySmoothing.SmoothGeometry(positions, indices);
+		indices.Reverse();
+		tranIndices.Reverse();
 		List<Vector3> collision = new();
 		for (int i = 0; i < indices.Count; i += 3)
 		{

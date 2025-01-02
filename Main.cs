@@ -15,6 +15,7 @@ public partial class Main : Node
 		Voxel.RegisterVoxel(AirVoxel.Instance);
 		Voxel.RegisterVoxel(DirtVoxel.Instance);
 		Voxel.RegisterVoxel(GrassVoxel.Instance);
+		Voxel.RegisterVoxel(StoneVoxel.Instance);
 		RegisterSurfaceMehses();
 		_world = GetNode<Node3D>("World");
 		Global.GlobalNode.Main = this;

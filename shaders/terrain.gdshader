@@ -16,6 +16,9 @@ uniform sampler2D grass_h;
 uniform sampler2D dirt_c;
 uniform sampler2D dirt_n;
 uniform sampler2D dirt_h;
+uniform sampler2D stone_c;
+uniform sampler2D stone_n;
+uniform sampler2D stone_h;
 uniform sampler2D chunkData;
 
 vec4 sampleTex(sampler2D sampler, sampler2D samplerWall, float scale, vec3 vertex, vec3 faceNormal) {
@@ -85,6 +88,11 @@ vec3 getVoxelColor(int voxelId, out vec3 normalTex, out bool hasNormal) {
 		normalTex = sampleTex(grass_n, dirt_n, 1.0, position, normal).xyz;
 		return sampleTex(grass_c, dirt_c, 1.0, position, normal).xyz;
 	}
+	if (voxelId == 3) {
+		hasNormal = true;
+		normalTex = sampleTex(stone_n, stone_n, 1.0, position, normal).xyz;
+		return sampleTex(stone_c, stone_c, 1.0, position, normal).xyz;
+	}
 	normalTex = normal;
 	hasNormal = false;
 	return vec3(0, 0, 0);
@@ -138,6 +146,7 @@ void fragment() {
 		accumulatedNormal /= totalNormalWeight;
 	}
 	NORMAL_MAP = accumulatedNormal;
+	NORMAL_MAP_DEPTH = 4.0;
 	ALBEDO = isBorder ? vec3(1, 0, 0) : accumulatedColor;
 	ROUGHNESS = 0.7;
 }

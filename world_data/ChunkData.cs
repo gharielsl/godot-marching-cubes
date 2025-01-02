@@ -15,7 +15,7 @@ public partial class ChunkData
 	}
 	public void Generate()
 	{
-		_data = WorldGenerator.Generate(_x, _z, _seed);
+		_data = WorldGenerator.Generate(this, _seed);
 	}
 	public Voxel GetVoxel(int x, int y, int z)
 	{
