@@ -206,6 +206,7 @@ public partial class Chunk : StaticBody3D
 			}	
 		}
 	}
+	
 	private void CreateSurfaceMeshes(List<Vector3> triangles)
 	{
 		Dictionary<MultiMeshInstance3D, Dictionary<int, Transform3D>> transforms = new();
@@ -217,12 +218,17 @@ public partial class Chunk : StaticBody3D
 			Vector3 p3 = triangles[i + 2];
 			GD.Seed((ulong)(p1.GetHashCode() ^ p2.GetHashCode() ^ p3.GetHashCode()));
 			Vector3 normal = -(p2 - p1).Cross(p3 - p1).Normalized();
-			if (normal.Y < 0.5) { continue; }
 			Vector3 center = (p1 + p2 + p3) / 3f;
 			Basis basis = Basis.Identity;
 			basis.Y = normal;
-			basis = basis.Rotated(normal, Mathf.DegToRad(GD.Randf() * 360));
-			basis = basis.Rotated(new(-normal.X, normal.Y, -normal.Z), Mathf.DegToRad(GD.Randf() * 10));
+			Vector3 arbitrary = Math.Abs(normal.Dot(new Vector3(1, 0, 0))) < 0.999
+				? new Vector3(1, 0, 0)
+				: new Vector3(0, 1, 0);
+
+			basis.X = arbitrary.Cross(normal).Normalized();
+			basis.Z = basis.Y.Cross(basis.X).Normalized();
+			//basis = basis.Rotated(normal, Mathf.DegToRad(GD.Randf() * 360));
+			//basis = basis.Rotated(new(-normal.X, normal.Y, -normal.Z), Mathf.DegToRad(GD.Randf() * 10));
 			Vector3I voxelPosition = new(
 				Mathf.RoundToInt(center.X),
 				Mathf.RoundToInt(center.Y),
@@ -259,6 +265,7 @@ public partial class Chunk : StaticBody3D
 			}
 			MultiMeshInstance3D surfaceMesh;
 			SurfaceMesh surfaceMeshInstance = SurfaceMesh.SurfaceMeshes[voxel.Id];
+			if (normal.Y < surfaceMeshInstance.Normal) { continue; }
 			if (!_surfaceMeshes.ContainsKey(voxel))
 			{
 				surfaceMesh = new();
@@ -276,7 +283,7 @@ public partial class Chunk : StaticBody3D
 				transforms.Add(surfaceMesh, new());
 				colors.Add(surfaceMesh, new());
 			}
-			int max = SurfaceMeshCount;
+			int max = surfaceMeshInstance.Count;
 			for (int j = 0; j < max; j++)
 			{
 				GD.Seed((ulong)(p1.GetHashCode() ^ p2.GetHashCode() ^ p3.GetHashCode() ^ j));
@@ -399,10 +406,10 @@ public partial class Chunk : StaticBody3D
 		GeometrySmoothing.SmoothGeometry(positions, indices);
 		GeometrySmoothing.SmoothGeometry(tranPositions, tranIndices);
 		// Optional
-		GeometrySmoothing.SubdivideGeometry(positions, indices);
-		GeometrySmoothing.SmoothGeometry(positions, indices);
-		GeometrySmoothing.SubdivideGeometry(tranPositions, tranIndices);
-		GeometrySmoothing.SmoothGeometry(tranPositions, tranIndices);
+		//GeometrySmoothing.SubdivideGeometry(positions, indices);
+		//GeometrySmoothing.SmoothGeometry(positions, indices);
+		//GeometrySmoothing.SubdivideGeometry(tranPositions, tranIndices);
+		//GeometrySmoothing.SmoothGeometry(tranPositions, tranIndices);
 
 		indices.Reverse();
 		tranIndices.Reverse();

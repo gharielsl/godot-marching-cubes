@@ -5,7 +5,7 @@
     {
 
     }
-    public override Voxel GetVoxel(ChunkData chunk, Voxel[,,] data, int seed, double h1, double h2, int x, int y, int z)
+    public override Voxel GetVoxel(ChunkData chunk, Voxel[,,] data, int seed, double c, double h1, double h2, int x, int y, int z)
     {
         Voxel voxel = AirVoxel.Instance;
         if (y < h1 - 4)

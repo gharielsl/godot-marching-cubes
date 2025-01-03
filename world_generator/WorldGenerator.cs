@@ -13,10 +13,16 @@ public class WorldGenerator
             {
                 for (int z = 0; z < ChunkData.ChunkSize; z++)
                 {
+                    if (y == 0)
+                    {
+                        data[x, y, z] = StoneVoxel.Instance;
+                        continue;
+                    }
                     Biome blendedBiome = GetBlendedBiome(x + ChunkData.ChunkSize * chunk.X, 0, z + ChunkData.ChunkSize * chunk.Z, noise, out Biome biome);
                     double h1 = blendedBiome.BaseHeight + blendedBiome.HeightVariation * noise.GetPerlin((chunk.X * ChunkData.ChunkSize + x) * noiseScale, (chunk.Z * ChunkData.ChunkSize + z) * noiseScale);
                     double h2 = blendedBiome.BaseHeight - 2 + 12 * noise.GetPerlin((chunk.X * ChunkData.ChunkSize + x) * 16, (chunk.Z * ChunkData.ChunkSize + z) * 16);
-                    data[x, y, z] = biome.GetVoxel(chunk, data, seed, h1, h2, x, y, z);
+                    double c = noise.GetPerlin((chunk.X * ChunkData.ChunkSize + x) * noiseScale, y * noiseScale, (chunk.Z * ChunkData.ChunkSize + z) * noiseScale);
+                    data[x, y, z] = biome.GetVoxel(chunk, data, seed, c, h1, h2, x, y, z);
                 }
             }
         }

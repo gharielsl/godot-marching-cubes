@@ -7,10 +7,14 @@ public class SurfaceMesh
 	
 	private readonly Mesh _mesh;
 	private readonly Material _material;
-	public SurfaceMesh(Mesh mesh, Material material)
+	private readonly float _normal;
+	private readonly int _count;
+	public SurfaceMesh(Mesh mesh, Material material, float normal, int count)
 	{
 		_mesh = mesh;
 		_material = material;
+		_normal = normal;
+		_count = count;
 	}
 	public Mesh Mesh
 	{
@@ -19,5 +23,13 @@ public class SurfaceMesh
 	public Material Material
 	{
 		get { return _material; }
+	}
+	public float Normal
+	{
+		get { return _normal; }
+	}
+	public int Count
+	{
+		get { return _count; }
 	}
 }

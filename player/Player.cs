@@ -70,15 +70,20 @@ public partial class Player : CharacterBody3D
 		{
 			_jolt = 1;
 			_velocity.Y = 0;
-			if (Input.IsActionJustPressed("jump"))
-			{
-				_jolt = 0.1f;
-				_velocity.Y = JumpHeight;
-			}
+			//if (Input.IsActionJustPressed("jump"))
+			//{
+			//	_jolt = 0.1f;
+			//	_velocity.Y = JumpHeight;
+			//}
 		}
 		else
 		{
 			_velocity.Y -= Gravity * (float)delta;
+		}
+		if (Input.IsActionJustPressed("jump"))
+		{
+			_jolt = 0.1f;
+			_velocity.Y = JumpHeight;
 		}
 		Vector3 rotation = _camera.Rotation;
 		rotation.X -= _mouseInput.Y * Global.MouseSensitivity * (float)delta;

@@ -1,4 +1,4 @@
-[gd_resource type="ShaderMaterial" load_steps=10 format=3 uid="uid://bcbv8pets5ltd"]
+[gd_resource type="ShaderMaterial" load_steps=14 format=3 uid="uid://bcbv8pets5ltd"]
 
 [ext_resource type="Shader" path="res://shaders/terrain.gdshader" id="1_rl70o"]
 [ext_resource type="Texture2D" uid="uid://85rfa0avq8ng" path="res://tex/dirt_c.png" id="2_tj25l"]
@@ -6,8 +6,12 @@
 [ext_resource type="Texture2D" uid="uid://bcnciu83qjqk6" path="res://tex/grass_c.jpg" id="4_cnr54"]
 [ext_resource type="Texture2D" uid="uid://bsj0ehkrcjnfe" path="res://tex/grass_n.jpg" id="5_1gl50"]
 [ext_resource type="Texture2D" uid="uid://c6j87ob6ejy8h" path="res://tex/sand_c.jpg" id="6_3tffw"]
+[ext_resource type="Texture2D" uid="uid://dbcgmlv05hvmr" path="res://tex/moss_stone_c.jpg" id="6_8nceu"]
+[ext_resource type="Texture2D" uid="uid://cys5hfuxfnhf1" path="res://tex/moss_stone_n.jpg" id="7_0f7nt"]
 [ext_resource type="Texture2D" uid="uid://bwv42k6ssuka" path="res://tex/sand_n.jpg" id="7_bo6ar"]
 [ext_resource type="Texture2D" uid="uid://ch28cua12b1cq" path="res://tex/stone_c.jpg" id="8_6hjil"]
+[ext_resource type="Texture2D" uid="uid://3bjrnc4ee3bu" path="res://tex/obsidian_c.jpg" id="8_o2p5x"]
+[ext_resource type="Texture2D" uid="uid://bs5b83r87ws42" path="res://tex/obsidian_n.jpg" id="9_27aw5"]
 [ext_resource type="Texture2D" uid="uid://d857p4rmbsrv" path="res://tex/stone_n.jpg" id="10_i0g5r"]
 
 [resource]
@@ -22,3 +26,7 @@ shader_parameter/stone_c = ExtResource("8_6hjil")
 shader_parameter/stone_n = ExtResource("10_i0g5r")
 shader_parameter/sand_c = ExtResource("6_3tffw")
 shader_parameter/sand_n = ExtResource("7_bo6ar")
+shader_parameter/moss_stone_c = ExtResource("6_8nceu")
+shader_parameter/moss_stone_n = ExtResource("7_0f7nt")
+shader_parameter/obsidian_c = ExtResource("8_o2p5x")
+shader_parameter/obsidian_n = ExtResource("9_27aw5")

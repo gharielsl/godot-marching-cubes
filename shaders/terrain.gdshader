@@ -22,6 +22,12 @@ uniform sampler2D stone_h;
 uniform sampler2D sand_c;
 uniform sampler2D sand_n;
 uniform sampler2D sand_h;
+uniform sampler2D moss_stone_c;
+uniform sampler2D moss_stone_n;
+uniform sampler2D moss_stone_h;
+uniform sampler2D obsidian_c;
+uniform sampler2D obsidian_n;
+uniform sampler2D obsidian_h;
 uniform sampler2D chunkData;
 
 vec4 sampleTex(sampler2D sampler, sampler2D samplerWall, float scale, vec3 vertex, vec3 faceNormal) {
@@ -100,6 +106,16 @@ vec3 getVoxelColor(int voxelId, out vec3 normalTex, out bool hasNormal) {
 		hasNormal = true;
 		normalTex = sampleTex(sand_n, sand_n, 1.0, position, normal).xyz;
 		return sampleTex(sand_c, sand_c, 1.0, position, normal).xyz;
+	}
+	if (voxelId == 6) {
+		hasNormal = true;
+		normalTex = sampleTex(moss_stone_n, moss_stone_n, 1.0, position, normal).xyz;
+		return sampleTex(moss_stone_c, moss_stone_c, 1.0, position, normal).xyz;
+	}
+	if (voxelId == 7) {
+		hasNormal = true;
+		normalTex = sampleTex(obsidian_n, obsidian_n, 1.0, position, normal).xyz;
+		return sampleTex(obsidian_c, obsidian_c, 1.0, position, normal).xyz;
 	}
 	normalTex = normal;
 	hasNormal = false;

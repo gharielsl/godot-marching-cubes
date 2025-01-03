@@ -12,7 +12,7 @@
         HeightVariation = heightVariation;
     }
     public Biome() { }
-    public virtual Voxel GetVoxel(ChunkData chunk, Voxel[,,] data, int seed, double h1, double h2, int x, int y, int z)
+    public virtual Voxel GetVoxel(ChunkData chunk, Voxel[,,] data, int seed, double c, double h1, double h2, int x, int y, int z)
     {
         return AirVoxel.Instance;
     }
