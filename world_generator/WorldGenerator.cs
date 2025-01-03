@@ -6,7 +6,7 @@ public class WorldGenerator
     {
         FastNoise noise = new FastNoise(seed);
         Voxel[,,] data = new Voxel[ChunkData.ChunkSize, WorldData.WorldHeight, ChunkData.ChunkSize];
-        double noiseScale = 8;
+        double noiseScale = 1/8;
         for (int x = 0; x < ChunkData.ChunkSize; x++)
         {
             for (int y = 0; y < WorldData.WorldHeight; y++)
@@ -30,23 +30,64 @@ public class WorldGenerator
     }
     public static Biome GetBiome(double noise)
     {
-        if (noise <= 0)
+        if (noise < -0.75)
         {
             return ForestBiome.Instance;
         }
-        if (noise <= 0.25)
+        if (noise < -0.5)
+        {
+            return HighForestBiome.Instance;
+        }
+        if (noise < -0.3)
+        {
+            return HighBeachBiome.Instance;
+        }
+        if (noise < -0.25)
+        {
+            return HighBeachEdgeBiome.Instance;
+        }
+        if (noise < -0.125)
+        {
+            return ForestBiome.Instance;
+        }
+        if (noise < 0)
         {
             return BeachBiome.Instance;
         }
-        if (noise <= 0.5)
+        if (noise < 0.25)
         {
             return RiverBiome.Instance;
         }
-        if (noise <= 0.75)
+        if (noise < 0.35)
         {
             return BeachBiome.Instance;
         }
+        if (noise < 0.5)
+        {
+            return ForestBiome.Instance;
+        }
+        if (noise < 0.55)
+        {
+            return HighBeachEdgeBiome.Instance;
+        }
+        if (noise < 0.7)
+        {
+            return HighBeachBiome.Instance;
+        }
         return ForestBiome.Instance;
+        // forest
+        // high forest
+        // high beach
+        // high beach edge
+        // forest
+        // beach
+        // river
+        // beach
+        // forest
+        // high beach edge
+        // high beach
+        // high forest
+        // forest
     }
     public static Biome GetBlendedBiome(int x, int y, int z, FastNoise noise, out Biome currentBiome)
     {
@@ -56,7 +97,7 @@ public class WorldGenerator
         {
             for (int k = -Biome.BiomeBlendSize; k <= Biome.BiomeBlendSize; k++)
             {
-                double biomeValue = 2 * noise.GetPerlin(x / 2 + i, z / 2 + k);
+                double biomeValue = noise.GetPerlin(x / 2d + i / 2d, z / 2d + k / 2d);
                 Biome biome = GetBiome(biomeValue);
                 blendedBiome.BaseHeight += biome.BaseHeight;
                 blendedBiome.HeightVariation += biome.HeightVariation;

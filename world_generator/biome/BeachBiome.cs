@@ -1,7 +1,7 @@
 ﻿public class BeachBiome : Biome
 {
     public static readonly BeachBiome Instance = new();
-    public BeachBiome(): base(SeaLevelHeight + 2, 2)
+    public BeachBiome(): base(SeaLevelHeight + 1, 1)
     {
 
     }

@@ -2,7 +2,10 @@
 public class ForestBiome : Biome
 {
     public static readonly ForestBiome Instance = new();
-
+    public ForestBiome()
+    {
+        BaseHeight++;
+    }
     public override Voxel GetVoxel(ChunkData chunk, Voxel[,,] data, int seed, double c, double h1, double h2, int x, int y, int z)
     {
         Voxel voxel = AirVoxel.Instance;
@@ -39,20 +42,16 @@ public class ForestBiome : Biome
             voxel = stone;
             Propagate(data, x, y, z, voxel);
         }
-        if (h2 > h1 && y < h1 + 6)
-        {
-            voxel = stone;
-            Propagate(data, x, y, z, voxel);
-        } 
-        else if (h2 + 3 > h1 && y > h1 + 6 && y < h1 + 9)
-        {
-            voxel = GrassVoxel.Instance;
-            Propagate(data, x, y, z, voxel);
-        }
-        if (c > 0.6)
-        {
-            voxel = ObsidianVoxel.Instance;
-        }
+        //if (h2 > h1 && y < h1 + 6)
+        //{
+        //    voxel = stone;
+        //    Propagate(data, x, y, z, voxel);
+        //} 
+        //else if (h2 + 3 > h1 && y > h1 + 6 && y < h1 + 9)
+        //{
+        //    voxel = GrassVoxel.Instance;
+        //    Propagate(data, x, y, z, voxel);
+        //}
         return voxel;
     }
 
