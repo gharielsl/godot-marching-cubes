@@ -15,7 +15,8 @@ public class ForestBiome : Biome
             return voxel;
         }
 
-        sample.H1 += sample.B * 2;
+        sample.H1 -= sample.B * 10;
+        sample.H1 -= sample.C * 2;
         //h1 += c * 2;
         //h2 += c * 4;
 
@@ -25,7 +26,7 @@ public class ForestBiome : Biome
         {
             voxel = GrassVoxel.Instance;
         }
-        else if (y < sample.H1 - 4)
+        else if (y < sample.H1 - 3)
         {
             voxel = stone;
         }

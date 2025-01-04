@@ -58,6 +58,10 @@ public class WorldGenerator
         {
             return HighBeachEdgeBiome.Instance;
         }
+        if (noise < -0.2)
+        {
+            return HighBeachLowerEdgeBiome.Instance;
+        }
         if (noise < -0.125)
         {
             return ForestBiome.Instance;
@@ -74,9 +78,13 @@ public class WorldGenerator
         {
             return BeachBiome.Instance;
         }
-        if (noise < 0.5)
+        if (noise < 0.45)
         {
             return ForestBiome.Instance;
+        }
+        if (noise < 0.5)
+        {
+            return HighBeachLowerEdgeBiome.Instance;
         }
         if (noise < 0.55)
         {
