@@ -347,7 +347,7 @@ public partial class Chunk : StaticBody3D
 		{
 			if (mesh.Mesh != null)
 			{
-				mesh.Mesh.Dispose();
+				mesh.Mesh.Dispose(); 
 				mesh.Mesh = null;
 			}
 			if (indices.Count > 0)
