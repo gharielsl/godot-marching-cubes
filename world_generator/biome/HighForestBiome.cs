@@ -5,6 +5,6 @@ public class HighForestBiome : ForestBiome
     public HighForestBiome()
     {
         HeightVariation = 3;
-        BaseHeight += 10;
+        BaseHeight += 14;
     }
 }

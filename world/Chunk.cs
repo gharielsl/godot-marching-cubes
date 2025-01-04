@@ -406,10 +406,10 @@ public partial class Chunk : StaticBody3D
 		GeometrySmoothing.SmoothGeometry(positions, indices);
 		GeometrySmoothing.SmoothGeometry(tranPositions, tranIndices);
 		// Optional
-		//GeometrySmoothing.SubdivideGeometry(positions, indices);
-		//GeometrySmoothing.SmoothGeometry(positions, indices);
-		//GeometrySmoothing.SubdivideGeometry(tranPositions, tranIndices);
-		//GeometrySmoothing.SmoothGeometry(tranPositions, tranIndices);
+		GeometrySmoothing.SubdivideGeometry(positions, indices);
+		GeometrySmoothing.SmoothGeometry(positions, indices);
+		GeometrySmoothing.SubdivideGeometry(tranPositions, tranIndices);
+		GeometrySmoothing.SmoothGeometry(tranPositions, tranIndices);
 
 		indices.Reverse();
 		tranIndices.Reverse();

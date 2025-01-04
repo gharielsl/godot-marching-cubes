@@ -10,7 +10,7 @@ public partial class Main : Node
 		grassMat.SetShaderParameter("animated", true);
 		grassMat.SetShaderParameter("glow", false);
 		grassMat.ResourceLocalToScene = true;
-		SurfaceMesh.SurfaceMeshes.Add(GrassVoxel.ID, new SurfaceMesh(grass, grassMat, 0.5f, 20));
+		SurfaceMesh.SurfaceMeshes.Add(GrassVoxel.ID, new SurfaceMesh(grass, grassMat, 0.5f, 4));
 
 		Mesh crystal = ResourceLoader.Load<ArrayMesh>("res://voxel/surface_mesh/crystal.res");
 		ShaderMaterial crystalMat = ResourceLoader.Load<ShaderMaterial>("res://shaders/surface_mesh.tres").Duplicate(true) as ShaderMaterial;
@@ -18,7 +18,7 @@ public partial class Main : Node
 		crystalMat.SetShaderParameter("color", ResourceLoader.Load<Texture2D>("res://voxel/surface_mesh/crystal.jpg"));
 		crystalMat.SetShaderParameter("animated", false);
 		crystalMat.SetShaderParameter("glow", true);
-		SurfaceMesh.SurfaceMeshes.Add(ObsidianVoxel.ID, new SurfaceMesh(crystal, crystalMat, -1, 2));
+		SurfaceMesh.SurfaceMeshes.Add(ObsidianVoxel.ID, new SurfaceMesh(crystal, crystalMat, -1, 1));
 	}
 	public override void _Ready()
 	{

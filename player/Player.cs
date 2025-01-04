@@ -83,6 +83,8 @@ public partial class Player : CharacterBody3D
 		if (Input.IsActionJustPressed("jump"))
 		{
 			_jolt = 0.1f;
+			Vector3 normal = IsOnFloor() ? GetFloorNormal() : Vector3.Up;
+			_velocity += normal * JumpHeight;
 			_velocity.Y = JumpHeight;
 		}
 		Vector3 rotation = _camera.Rotation;

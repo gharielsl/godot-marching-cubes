@@ -90,7 +90,7 @@ public class MarchingCubes
 
                 if (isTransparent)
                 {
-                    vertPosition.Y -= 0.5f;
+                    vertPosition.Y -= 1;
                 }
                 if (SmoothNormals)
                 {

@@ -1,24 +1,27 @@
-﻿public class BeachBiome : Biome
+﻿using Godot;
+
+public class BeachBiome : Biome
 {
     public static readonly BeachBiome Instance = new();
-    public BeachBiome(): base(SeaLevelHeight + 1, 1)
+    public BeachBiome(): base(SeaLevelHeight + 1, 4)
     {
 
     }
-    public override Voxel GetVoxel(ChunkData chunk, Voxel[,,] data, int seed, double c, double h1, double h2, int x, int y, int z)
+    public override Voxel GetVoxel(ChunkData chunk, Voxel[,,] data, int seed, NoiseSample sample, int x, int y, int z)
     {
-        Voxel voxel = AirVoxel.Instance;
-        if (y < h1 - 4)
+        Voxel voxel = base.GetVoxel(chunk, data, seed, sample, x, y, z);
+        Voxel stone = sample.F > 0.5 ? StoneVoxel.Instance : MossStoneVoxel.Instance;
+        if (y < sample.H1 - 4)
         {
-            voxel = StoneVoxel.Instance;
+            voxel = stone;
         }
-        else if (y <= (int)h1)
+        else if (y <= (int)sample.H1)
         {
             voxel = SandVoxel.Instance;
         }
-        if (y == (int)h2 && y < (int)h1 + 2)
+        if (y == (int)sample.H2 && y < (int)sample.H1 + 2)
         {
-            voxel = StoneVoxel.Instance;
+            voxel = stone;
             if (y > 0)
             {
                 data[x, y - 1, z] = voxel;

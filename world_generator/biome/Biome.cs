@@ -1,4 +1,6 @@
-﻿public class Biome
+﻿using Godot;
+
+public class Biome
 {
     public static readonly int BiomeBlendSize = 2;
     public static readonly float NormalBaseHeight = 12;
@@ -12,8 +14,17 @@
         HeightVariation = heightVariation;
     }
     public Biome() { }
-    public virtual Voxel GetVoxel(ChunkData chunk, Voxel[,,] data, int seed, double c, double h1, double h2, int x, int y, int z)
+    public virtual Voxel GetVoxel(ChunkData chunk, Voxel[,,] data, int seed, NoiseSample sample, int x, int y, int z)
     {
-        return AirVoxel.Instance;
+        if (this is BeachBiome && this is not HighBeachBiome)
+        {
+            return AirVoxel.Instance;
+        }
+        Voxel voxel = AirVoxel.Instance;
+        if (sample.C > 0.6 && y < sample.H1 + 2)
+        {
+            voxel = ObsidianVoxel.Instance;
+        }
+        return voxel;
     }
 }

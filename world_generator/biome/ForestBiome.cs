@@ -4,40 +4,36 @@ public class ForestBiome : Biome
     public static readonly ForestBiome Instance = new();
     public ForestBiome()
     {
-        BaseHeight++;
+        BaseHeight = BeachBiome.Instance.BaseHeight + 3;
+        HeightVariation = 8;
     }
-    public override Voxel GetVoxel(ChunkData chunk, Voxel[,,] data, int seed, double c, double h1, double h2, int x, int y, int z)
+    public override Voxel GetVoxel(ChunkData chunk, Voxel[,,] data, int seed, NoiseSample sample, int x, int y, int z)
     {
-        Voxel voxel = AirVoxel.Instance;
-
-        h1 += c * 5;
-        h2 += c * 8;
-
-        RandomNumberGenerator random = new();
-        random.Seed = (ulong)(seed + Mathf.Abs(x * y + 0.2777183 * Mathf.Sin(z - seed)));
-        Voxel stone = random.Randf() < 0.5 ? StoneVoxel.Instance : MossStoneVoxel.Instance;
-        if (stone == MossStoneVoxel.Instance)
+        Voxel voxel = base.GetVoxel(chunk, data, seed, sample, x, y, z);
+        if (voxel == ObsidianVoxel.Instance)
         {
-            h1 -= c * 10;
-        }
-        if (random.Randf() < 0.08)
-        {
-            stone = DirtVoxel.Instance;
+            return voxel;
         }
 
-        if (y == (int)h1)
+        sample.H1 += sample.B * 2;
+        //h1 += c * 2;
+        //h2 += c * 4;
+
+        Voxel stone = sample.F < 0.5 ? StoneVoxel.Instance : MossStoneVoxel.Instance;
+
+        if (y == (int)sample.H1)
         {
             voxel = GrassVoxel.Instance;
         }
-        else if (y < h1 - 4)
+        else if (y < sample.H1 - 4)
         {
             voxel = stone;
         }
-        else if (y < (int)h1)
+        else if (y < (int)sample.H1)
         {
             voxel = DirtVoxel.Instance;
         }
-        if (y == (int)h2 && y < (int)h1 + 2)
+        if (y == (int)sample.H2 && y < (int)sample.H1 + 2)
         {
             voxel = stone;
             Propagate(data, x, y, z, voxel);

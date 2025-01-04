@@ -5,18 +5,18 @@
     {
 
     }
-    public override Voxel GetVoxel(ChunkData chunk, Voxel[,,] data, int seed, double c, double h1, double h2, int x, int y, int z)
+    public override Voxel GetVoxel(ChunkData chunk, Voxel[,,] data, int seed, NoiseSample sample, int x, int y, int z)
     {
         Voxel voxel = AirVoxel.Instance;
-        if (y < h1 - 4)
+        if (y < sample.H1 - 4)
         {
             voxel = StoneVoxel.Instance;
         }
-        else if (y <= (int)h1)
+        else if (y <= (int)sample.H1)
         {
             voxel = DirtVoxel.Instance;
         }
-        if (y == (int)h2 && y < (int)h1 + 2)
+        if (y == (int)sample.H2 && y < (int)sample.H1 + 2)
         {
             voxel = StoneVoxel.Instance;
             if (y > 0)
