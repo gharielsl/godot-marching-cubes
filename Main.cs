@@ -10,7 +10,7 @@ public partial class Main : Node
 		grassMat.SetShaderParameter("animated", true);
 		grassMat.SetShaderParameter("glow", false);
 		grassMat.ResourceLocalToScene = true;
-		SurfaceMesh.SurfaceMeshes.Add(GrassVoxel.ID, new SurfaceMesh(grass, grassMat, 0.5f, 4));
+		SurfaceMesh.SurfaceMeshes.Add(GrassVoxel.ID, new SurfaceMesh(grass, grassMat, 0.5f, 20));
 
 		Mesh crystal = ResourceLoader.Load<ArrayMesh>("res://voxel/surface_mesh/crystal.res");
 		ShaderMaterial crystalMat = ResourceLoader.Load<ShaderMaterial>("res://shaders/surface_mesh.tres").Duplicate(true) as ShaderMaterial;

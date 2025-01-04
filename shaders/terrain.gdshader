@@ -153,7 +153,7 @@ void fragment() {
 				vec3 normalTex;
 				vec3 color = getVoxelColor(voxelId, normalTex, hasNormal);
 				float dist = length(localPosition - vec3(float(x), float(y), float(z)));
-				float weight = smoothstep(1.5, 0.0, dist);
+				float weight = smoothstep(2.0, 0.0, dist);
 				if (weight <= 0.0) continue;
 				accumulatedColor += color * weight;
 				totalColorWeight += weight;
@@ -170,7 +170,7 @@ void fragment() {
 		accumulatedNormal /= totalNormalWeight;
 	}
 	NORMAL_MAP = accumulatedNormal;
-	NORMAL_MAP_DEPTH = 4.0;
+	NORMAL_MAP_DEPTH = 1.0;
 	ALBEDO = isBorder ? vec3(1, 0, 0) : accumulatedColor;
 	//ROUGHNESS = 0.7;
 }

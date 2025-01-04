@@ -284,8 +284,13 @@ public partial class Chunk : StaticBody3D
 				colors.Add(surfaceMesh, new());
 			}
 			int max = surfaceMeshInstance.Count;
+			if (surfaceMeshInstance.Normal > 0.25)
+			{
+				max /= (int)(surfaceMeshInstance.Normal * 4);
+			}
 			for (int j = 0; j < max; j++)
 			{
+				if (GD.Randf() < 0.5) { continue; }
 				GD.Seed((ulong)(p1.GetHashCode() ^ p2.GetHashCode() ^ p3.GetHashCode() ^ j));
 				float u = (float)GD.Randf();
 				float v = (float)GD.Randf();
@@ -405,11 +410,13 @@ public partial class Chunk : StaticBody3D
 		}
 		GeometrySmoothing.SmoothGeometry(positions, indices);
 		GeometrySmoothing.SmoothGeometry(tranPositions, tranIndices);
+
 		// Optional
 		GeometrySmoothing.SubdivideGeometry(positions, indices);
 		GeometrySmoothing.SmoothGeometry(positions, indices);
 		GeometrySmoothing.SubdivideGeometry(tranPositions, tranIndices);
 		GeometrySmoothing.SmoothGeometry(tranPositions, tranIndices);
+
 
 		indices.Reverse();
 		tranIndices.Reverse();
