@@ -17,9 +17,9 @@ public partial class Player : CharacterBody3D
 	private CollisionShape3D _collision;
 	private RayCast3D _spawnCheck;
 	private PauseMenu _pauseMenu;
-	private Vector3 _velocity = new Vector3();
-	private Vector2 _mouseInput = new Vector2();
-	private Vector2 _input = new Vector2();
+	private Vector3 _velocity = new();
+	private Vector2 _mouseInput = new();
+	private Vector2 _input = new();
 	public Input.MouseModeEnum MouseModeBeforePause;
 	public override void _EnterTree()
 	{
@@ -61,7 +61,7 @@ public partial class Player : CharacterBody3D
 		Vector3 direction = new Vector3();
 		direction += _input.X * _head.GlobalTransform.Basis.X;
 		direction -= _input.Y * _head.GlobalTransform.Basis.Z;
-		Vector2 surfaceVelocity = new Vector2(_velocity.X, _velocity.Z);
+		Vector2 surfaceVelocity = new(_velocity.X, _velocity.Z);
 		surfaceVelocity = surfaceVelocity.Lerp(new Vector2(direction.X, direction.Z) * Speed, Acceleration * _jolt * (float)delta);
 		_velocity.X = surfaceVelocity.X;
 		_velocity.Z = surfaceVelocity.Y;

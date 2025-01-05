@@ -57,23 +57,6 @@ min_value = 2.0
 max_value = 16.0
 value = 4.0
 
-[node name="MeshCountContainer" type="HBoxContainer" parent="Container"]
-layout_mode = 2
-alignment = 1
-
-[node name="MeshCountText" type="Label" parent="Container/MeshCountContainer"]
-custom_minimum_size = Vector2(290, 48)
-layout_mode = 2
-text = "Surface mesh count: 4"
-vertical_alignment = 1
-
-[node name="MeshCount" type="HSlider" parent="Container/MeshCountContainer"]
-custom_minimum_size = Vector2(290, 48)
-layout_mode = 2
-min_value = 1.0
-max_value = 10.0
-value = 4.0
-
 [node name="BackContainer" type="HBoxContainer" parent="Container"]
 layout_mode = 2
 alignment = 1
@@ -86,5 +69,4 @@ text = "Back"
 
 [connection signal="value_changed" from="Container/RenderContainer/RenderDistance" to="." method="RenderDistanceChanged"]
 [connection signal="value_changed" from="Container/MeshDistanceContainer/MeshDistance" to="." method="MeshDistanceChange"]
-[connection signal="value_changed" from="Container/MeshCountContainer/MeshCount" to="." method="MeshCountChangeEvent"]
 [connection signal="pressed" from="Container/BackContainer/Back" to="." method="Exit"]

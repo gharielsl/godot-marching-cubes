@@ -1,5 +1,7 @@
 shader_type spatial;
 
+#include "res://shaders/voronoi.gdshaderinc"
+
 //#define DEBUG
 
 #define WORLD_HEIGHT 128
@@ -31,7 +33,7 @@ uniform sampler2D obsidian_h;
 uniform sampler2D chunkData;
 
 vec4 sampleTex(sampler2D sampler, sampler2D samplerWall, float scale, vec3 vertex, vec3 faceNormal) {
-    vec3 pWeight = abs(faceNormal);
+	vec3 pWeight = abs(faceNormal);
     pWeight /= pWeight.x + pWeight.y + pWeight.z;
     vec2 yz = vertex.yz / scale;
     vec2 xz = vertex.xz / scale;
@@ -94,8 +96,8 @@ vec3 getVoxelColor(int voxelId, out vec3 normalTex, out bool hasNormal) {
 	}
 	if (voxelId == 2) {
 		hasNormal = true;
-		normalTex = sampleTex(grass_n, dirt_n, 1.0, position, normal).xyz;
-		return sampleTex(grass_c, dirt_c, 1.0, position, normal).xyz;
+		normalTex = sampleTex(grass_n, grass_n, 1.0, position, normal).xyz;
+		return sampleTex(grass_c, grass_c, 1.0, position, normal).xyz * vec3(0.5, 1, 0.5);
 	}
 	if (voxelId == 3) {
 		hasNormal = true;

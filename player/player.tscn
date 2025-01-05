@@ -9,6 +9,7 @@
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_ecqgl"]
 
 [node name="Player" type="CharacterBody3D"]
+floor_snap_length = 0.3
 script = ExtResource("1_v3i05")
 
 [node name="Collision" type="CollisionShape3D" parent="."]

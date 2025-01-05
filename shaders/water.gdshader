@@ -52,20 +52,29 @@ uniform sampler2D surface_normals_a;
 uniform sampler2D surface_normals_b;
 
 varying vec2 vertex_uv;
+varying vec3 lPosition;
+varying vec3 wPosition;
+varying vec3 camWPosition;
 
 float get_wave_height(vec2 uv)
 {
 	float height1 = texture(wave_a, uv).y;
 	float height2 = texture(wave_b, uv).y;
-	return (height1 + height2) / 2.0;
+	float playerFactor = clamp(1.5 - distance(camWPosition, wPosition), 0.0, 1.5);
+	return (height1 + height2) / 2.0 - sqrt(playerFactor);
 }
-
-varying vec3 lPosition;
 
 void vertex()
 {
 	lPosition = VERTEX;
+	wPosition = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
+	
 	vertex_uv = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xz;
+	vec2 minUv = vec2(float(BORDER_SIZE));
+	vec2 maxUv = vec2(float(CHUNK_SIZE + BORDER_SIZE));
+	vertex_uv = (vertex_uv - minUv) / (maxUv - minUv);
+	vertex_uv *= 0.99;
+	camWPosition = CAMERA_POSITION_WORLD;
 	vec2 uv = vertex_uv / wave_noise_scale + TIME * wave_time_scale;
 	VERTEX.y += get_wave_height(uv) * wave_height_scale;
 

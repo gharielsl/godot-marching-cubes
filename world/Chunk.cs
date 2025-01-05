@@ -233,29 +233,32 @@ public partial class Chunk : StaticBody3D
 				Mathf.RoundToInt(center.X),
 				Mathf.RoundToInt(center.Y),
 				Mathf.RoundToInt(center.Z));
-			Voxel voxel = _data[voxelPosition.X, voxelPosition.Y, voxelPosition.Z];
+			Voxel voxel = null;// = _data[voxelPosition.X, voxelPosition.Y, voxelPosition.Z];
 			int voxelId = 0;
-			if (voxel != null) voxelId = voxel.Id;
-			for (int x = 0; x <= 1 && !SurfaceMesh.SurfaceMeshes.ContainsKey(voxelId); x++)
-			{
-				for (int y = 0; y >= -1 && !SurfaceMesh.SurfaceMeshes.ContainsKey(voxelId); y--)
-				{
-					for (int z = 0; z <= 1 && !SurfaceMesh.SurfaceMeshes.ContainsKey(voxelId); z++)
-					{
-						if (voxelPosition.X + x < ChunkSizeWithBorder &&
-							voxelPosition.Y + y < WorldData.WorldHeight &&
-							voxelPosition.Z + z < ChunkSizeWithBorder &&
-							voxelPosition.X + x >= 0 &&
-							voxelPosition.Y + y >= 0 &&
-							voxelPosition.Z + z >= 0)
-						{
-							voxel = _data[voxelPosition.X + x, voxelPosition.Y + y, voxelPosition.Z + z];
-							if (voxel != null) voxelId = voxel.Id;
-						}
-					}
-				}
-			}
-			if (voxel == null || voxel == AirVoxel.Instance)
+            for (int x = 0; x <= 1 && !SurfaceMesh.SurfaceMeshes.ContainsKey(voxelId); x++)
+            {
+                for (int y = 0; y >= -1 && !SurfaceMesh.SurfaceMeshes.ContainsKey(voxelId); y--)
+                {
+                    for (int z = 0; z <= 1 && !SurfaceMesh.SurfaceMeshes.ContainsKey(voxelId); z++)
+                    {
+                        if (voxelPosition.X + x < ChunkSizeWithBorder &&
+                            voxelPosition.Y + y < WorldData.WorldHeight &&
+                            voxelPosition.Z + z < ChunkSizeWithBorder &&
+                            voxelPosition.X + x >= 0 &&
+                            voxelPosition.Y + y >= 0 &&
+                            voxelPosition.Z + z >= 0)
+                        {
+                            Voxel sample = _data[voxelPosition.X + x, voxelPosition.Y + y, voxelPosition.Z + z];
+							if (sample != null && SurfaceMesh.SurfaceMeshes.ContainsKey(sample.Id))
+                            {
+								voxelId = sample.Id;
+								voxel = sample;
+                            }
+                        }
+                    }
+                }
+            }
+            if (voxel == null || voxel == AirVoxel.Instance)
 			{
 				continue;
 			}
@@ -410,12 +413,16 @@ public partial class Chunk : StaticBody3D
 		}
 		GeometrySmoothing.SmoothGeometry(positions, indices);
 		GeometrySmoothing.SmoothGeometry(tranPositions, tranIndices);
-
-		// Optional
-		GeometrySmoothing.SubdivideGeometry(positions, indices);
-		GeometrySmoothing.SmoothGeometry(positions, indices);
 		GeometrySmoothing.SubdivideGeometry(tranPositions, tranIndices);
-		GeometrySmoothing.SmoothGeometry(tranPositions, tranIndices);
+
+        // Optional
+        GeometrySmoothing.SubdivideGeometry(positions, indices);
+        GeometrySmoothing.SmoothGeometry(positions, indices);
+        GeometrySmoothing.SmoothGeometry(tranPositions, tranIndices);
+
+		// Detailed water slow
+		//GeometrySmoothing.SubdivideGeometry(tranPositions, tranIndices);
+		//GeometrySmoothing.SubdivideGeometry(tranPositions, tranIndices);
 
 
 		indices.Reverse();
