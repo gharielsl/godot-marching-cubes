@@ -1,5 +1,5 @@
 # Godot marching cubes
-![](screenshots/screenshot3.png)
+![](screenshots/video.mp4)
 This is a demo of multiplayer marching cubes game in godot.
 
 # Features
